@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -13,8 +13,9 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import * as Google from 'expo-auth-session/providers/google';
-import * as AppleAuthentication from 'expo-apple-authentication';
+// TODO: Uncomment when Google/Apple OAuth is configured
+// import * as Google from 'expo-auth-session/providers/google';
+// import * as AppleAuthentication from 'expo-apple-authentication';
 import { useAuth } from '../../src/context/AuthContext';
 import { useTheme } from '../../src/context/ThemeContext';
 import { useLanguage } from '../../src/context/LanguageContext';
@@ -23,34 +24,36 @@ export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [googleLoading, setGoogleLoading] = useState(false);
-  const [appleLoading, setAppleLoading] = useState(false);
-  const [isAppleAvailable, setIsAppleAvailable] = useState(false);
-  const { signIn, signInWithGoogle, signInWithApple } = useAuth();
+  // TODO: Uncomment when Google/Apple OAuth is configured
+  // const [googleLoading, setGoogleLoading] = useState(false);
+  // const [appleLoading, setAppleLoading] = useState(false);
+  // const [isAppleAvailable, setIsAppleAvailable] = useState(false);
+  const { signIn } = useAuth();
   const { theme } = useTheme();
   const { t } = useLanguage();
 
+  // TODO: Uncomment when Google/Apple OAuth is configured
   // Google Auth - Configure with your Google Client IDs
-  const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
-    iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
-    androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
-    webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
-  });
+  // const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
+  //   iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
+  //   androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
+  //   webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+  // });
 
   // Check Apple Sign-In availability
-  useEffect(() => {
-    if (Platform.OS === 'ios') {
-      AppleAuthentication.isAvailableAsync().then(setIsAppleAvailable);
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (Platform.OS === 'ios') {
+  //     AppleAuthentication.isAvailableAsync().then(setIsAppleAvailable);
+  //   }
+  // }, []);
 
   // Handle Google response
-  useEffect(() => {
-    if (response?.type === 'success') {
-      const { id_token } = response.params;
-      handleGoogleSignIn(id_token);
-    }
-  }, [response]);
+  // useEffect(() => {
+  //   if (response?.type === 'success') {
+  //     const { id_token } = response.params;
+  //     handleGoogleSignIn(id_token);
+  //   }
+  // }, [response]);
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -69,29 +72,30 @@ export default function LoginScreen() {
     }
   };
 
-  const handleGoogleSignIn = async (idToken) => {
-    setGoogleLoading(true);
-    const { error } = await signInWithGoogle(idToken);
-    setGoogleLoading(false);
+  // TODO: Uncomment when Google/Apple OAuth is configured
+  // const handleGoogleSignIn = async (idToken) => {
+  //   setGoogleLoading(true);
+  //   const { error } = await signInWithGoogle(idToken);
+  //   setGoogleLoading(false);
 
-    if (error) {
-      Alert.alert(t('errors.loginError'), error.message || 'Erreur de connexion Google');
-    } else {
-      router.replace('/');
-    }
-  };
+  //   if (error) {
+  //     Alert.alert(t('errors.loginError'), error.message || 'Erreur de connexion Google');
+  //   } else {
+  //     router.replace('/');
+  //   }
+  // };
 
-  const handleAppleSignIn = async () => {
-    setAppleLoading(true);
-    const { error } = await signInWithApple();
-    setAppleLoading(false);
+  // const handleAppleSignIn = async () => {
+  //   setAppleLoading(true);
+  //   const { error } = await signInWithApple();
+  //   setAppleLoading(false);
 
-    if (error) {
-      Alert.alert(t('errors.loginError'), error.message || 'Erreur de connexion Apple');
-    } else {
-      router.replace('/');
-    }
-  };
+  //   if (error) {
+  //     Alert.alert(t('errors.loginError'), error.message || 'Erreur de connexion Apple');
+  //   } else {
+  //     router.replace('/');
+  //   }
+  // };
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
@@ -121,9 +125,9 @@ export default function LoginScreen() {
           <Text style={[styles.formTitle, { color: theme.primary }]}>{t('auth.login')}</Text>
           <Text style={[styles.formSubtitle, { color: theme.textMuted }]}>{t('auth.loginSubtitle')}</Text>
 
+          {/* TODO: Uncomment when Google/Apple OAuth is configured */}
           {/* OAuth Buttons */}
-          <View style={styles.oauthContainer}>
-            {/* Google Sign-In */}
+          {/* <View style={styles.oauthContainer}>
             <TouchableOpacity
               style={[styles.oauthButton, { backgroundColor: theme.inputBackground }]}
               onPress={() => promptAsync()}
@@ -139,7 +143,6 @@ export default function LoginScreen() {
               )}
             </TouchableOpacity>
 
-            {/* Apple Sign-In (iOS only) */}
             {Platform.OS === 'ios' && isAppleAvailable && (
               <TouchableOpacity
                 style={[styles.oauthButton, { backgroundColor: theme.mode === 'dark' ? '#FFFFFF' : '#000000' }]}
@@ -156,14 +159,14 @@ export default function LoginScreen() {
                 )}
               </TouchableOpacity>
             )}
-          </View>
+          </View> */}
 
           {/* Divider */}
-          <View style={styles.dividerContainer}>
+          {/* <View style={styles.dividerContainer}>
             <View style={[styles.divider, { backgroundColor: theme.border }]} />
             <Text style={[styles.dividerText, { color: theme.textMuted }]}>ou</Text>
             <View style={[styles.divider, { backgroundColor: theme.border }]} />
-          </View>
+          </View> */}
 
           <View style={styles.inputContainer}>
             <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>{t('auth.email')}</Text>
