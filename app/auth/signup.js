@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -14,6 +14,8 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
+import * as Google from 'expo-auth-session/providers/google';
+import * as AppleAuthentication from 'expo-apple-authentication';
 import { useAuth } from '../../src/context/AuthContext';
 import { useTheme } from '../../src/context/ThemeContext';
 import { useLanguage } from '../../src/context/LanguageContext';
@@ -24,9 +26,34 @@ export default function SignupScreen() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signUp } = useAuth();
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const [appleLoading, setAppleLoading] = useState(false);
+  const [isAppleAvailable, setIsAppleAvailable] = useState(false);
+  const { signUp, signInWithGoogle, signInWithApple } = useAuth();
   const { theme } = useTheme();
   const { t } = useLanguage();
+
+  // Google Auth
+  const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
+    iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
+    androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
+    webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+  });
+
+  // Check Apple Sign-In availability
+  useEffect(() => {
+    if (Platform.OS === 'ios') {
+      AppleAuthentication.isAvailableAsync().then(setIsAppleAvailable);
+    }
+  }, []);
+
+  // Handle Google response
+  useEffect(() => {
+    if (response?.type === 'success') {
+      const { id_token } = response.params;
+      handleGoogleSignIn(id_token);
+    }
+  }, [response]);
 
   const handleSignup = async () => {
     if (!username || !email || !password || !confirmPassword) {
@@ -54,6 +81,30 @@ export default function SignupScreen() {
       Alert.alert(t('success.signupSuccess'), t('success.checkEmail'), [
         { text: t('common.ok'), onPress: () => router.replace('/auth/login') }
       ]);
+    }
+  };
+
+  const handleGoogleSignIn = async (idToken) => {
+    setGoogleLoading(true);
+    const { error } = await signInWithGoogle(idToken);
+    setGoogleLoading(false);
+
+    if (error) {
+      Alert.alert(t('errors.signupError'), error.message || 'Erreur de connexion Google');
+    } else {
+      router.replace('/');
+    }
+  };
+
+  const handleAppleSignIn = async () => {
+    setAppleLoading(true);
+    const { error } = await signInWithApple();
+    setAppleLoading(false);
+
+    if (error) {
+      Alert.alert(t('errors.signupError'), error.message || 'Erreur de connexion Apple');
+    } else {
+      router.replace('/');
     }
   };
 
@@ -88,6 +139,50 @@ export default function SignupScreen() {
           <View style={[styles.formCard, { backgroundColor: theme.card }]}>
             <Text style={[styles.formTitle, { color: theme.primary }]}>{t('auth.signup')}</Text>
             <Text style={[styles.formSubtitle, { color: theme.textMuted }]}>{t('auth.signupSubtitle')}</Text>
+
+            {/* OAuth Buttons */}
+            <View style={styles.oauthContainer}>
+              {/* Google Sign-In */}
+              <TouchableOpacity
+                style={[styles.oauthButton, { backgroundColor: theme.inputBackground }]}
+                onPress={() => promptAsync()}
+                disabled={!request || googleLoading}
+              >
+                {googleLoading ? (
+                  <ActivityIndicator size="small" color={theme.text} />
+                ) : (
+                  <>
+                    <Text style={styles.oauthIcon}>G</Text>
+                    <Text style={[styles.oauthText, { color: theme.text }]}>Google</Text>
+                  </>
+                )}
+              </TouchableOpacity>
+
+              {/* Apple Sign-In (iOS only) */}
+              {Platform.OS === 'ios' && isAppleAvailable && (
+                <TouchableOpacity
+                  style={[styles.oauthButton, { backgroundColor: theme.mode === 'dark' ? '#FFFFFF' : '#000000' }]}
+                  onPress={handleAppleSignIn}
+                  disabled={appleLoading}
+                >
+                  {appleLoading ? (
+                    <ActivityIndicator size="small" color={theme.mode === 'dark' ? '#000000' : '#FFFFFF'} />
+                  ) : (
+                    <>
+                      <Text style={[styles.oauthIcon, { color: theme.mode === 'dark' ? '#000000' : '#FFFFFF' }]}></Text>
+                      <Text style={[styles.oauthText, { color: theme.mode === 'dark' ? '#000000' : '#FFFFFF' }]}>Apple</Text>
+                    </>
+                  )}
+                </TouchableOpacity>
+              )}
+            </View>
+
+            {/* Divider */}
+            <View style={styles.dividerContainer}>
+              <View style={[styles.divider, { backgroundColor: theme.border }]} />
+              <Text style={[styles.dividerText, { color: theme.textMuted }]}>ou</Text>
+              <View style={[styles.divider, { backgroundColor: theme.border }]} />
+            </View>
 
             <View style={styles.inputContainer}>
               <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>{t('auth.username')}</Text>
@@ -248,7 +343,42 @@ const styles = StyleSheet.create({
   formSubtitle: {
     fontSize: 14,
     textAlign: 'center',
-    marginBottom: 25,
+    marginBottom: 20,
+  },
+  oauthContainer: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 20,
+  },
+  oauthButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 14,
+    borderRadius: 12,
+    gap: 8,
+  },
+  oauthIcon: {
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  oauthText: {
+    fontSize: 15,
+    fontWeight: '600',
+  },
+  dividerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  divider: {
+    flex: 1,
+    height: 1,
+  },
+  dividerText: {
+    marginHorizontal: 15,
+    fontSize: 13,
   },
   inputContainer: {
     marginBottom: 15,

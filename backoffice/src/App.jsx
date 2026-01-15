@@ -252,7 +252,31 @@ function App() {
     setDeletingUser(null)
   }
 
-  const handleSaveUser = async (userData) => {
+  const uploadUserAvatar = async (userId, file) => {
+    try {
+      const ext = file.name.split('.').pop()
+      const fileName = `${userId}-${Date.now()}.${ext}`
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(fileName, file, {
+          contentType: file.type,
+        })
+
+      if (uploadError) throw uploadError
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(fileName)
+
+      return { url: publicUrl, error: null }
+    } catch (error) {
+      console.error('Avatar upload error:', error)
+      return { url: null, error }
+    }
+  }
+
+  const handleSaveUser = async (userData, avatarFile) => {
     const profileData = {
       first_name: userData.first_name,
       last_name: userData.last_name,
@@ -260,8 +284,19 @@ function App() {
       is_admin: userData.is_admin,
     }
 
+    let userId = editingUser?.id
+
     if (editingUser) {
-      // Mode édition
+      // Mode édition - upload avatar si fourni
+      if (avatarFile) {
+        const { url, error: avatarError } = await uploadUserAvatar(editingUser.id, avatarFile)
+        if (avatarError) {
+          showToast('Erreur lors de l\'upload de l\'avatar', 'error')
+        } else if (url) {
+          profileData.avatar_url = url
+        }
+      }
+
       const { error } = await supabase
         .from('profiles')
         .update(profileData)
@@ -284,7 +319,7 @@ function App() {
       const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
         email: userData.email,
         password: userData.password,
-        email_confirm: true, // Confirmer l'email automatiquement
+        email_confirm: true,
       })
 
       if (authError) {
@@ -293,11 +328,23 @@ function App() {
         return false
       }
 
+      userId = authData.user.id
+
+      // Upload avatar si fourni
+      if (avatarFile) {
+        const { url, error: avatarError } = await uploadUserAvatar(userId, avatarFile)
+        if (avatarError) {
+          showToast('Erreur lors de l\'upload de l\'avatar', 'error')
+        } else if (url) {
+          profileData.avatar_url = url
+        }
+      }
+
       // Mettre à jour le profil avec les infos supplémentaires
       const { error: profileError } = await supabase
         .from('profiles')
         .update(profileData)
-        .eq('id', authData.user.id)
+        .eq('id', userId)
 
       if (profileError) {
         console.error('Erreur mise à jour profil:', profileError)
@@ -478,7 +525,11 @@ function App() {
                 <tr key={userProfile.id}>
                   <td>
                     <div className="user-avatar">
-                      {(userProfile.first_name || userProfile.username || userProfile.email || '?')[0].toUpperCase()}
+                      {userProfile.avatar_url ? (
+                        <img src={userProfile.avatar_url} alt="" className="user-avatar-img" />
+                      ) : (
+                        (userProfile.first_name || userProfile.username || userProfile.email || '?')[0].toUpperCase()
+                      )}
                     </div>
                   </td>
                   <td>

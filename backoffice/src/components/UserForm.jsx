@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 function UserForm({ user, onSave, onClose }) {
   const isEditing = !!user
+  const fileInputRef = useRef(null)
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -10,6 +11,8 @@ function UserForm({ user, onSave, onClose }) {
     username: '',
     is_admin: false,
   })
+  const [avatarFile, setAvatarFile] = useState(null)
+  const [avatarPreview, setAvatarPreview] = useState(null)
   const [saving, setSaving] = useState(false)
   const [errors, setErrors] = useState({})
 
@@ -23,6 +26,7 @@ function UserForm({ user, onSave, onClose }) {
         username: user.username || '',
         is_admin: user.is_admin || false,
       })
+      setAvatarPreview(user.avatar_url || null)
     } else {
       setFormData({
         email: '',
@@ -32,7 +36,9 @@ function UserForm({ user, onSave, onClose }) {
         username: '',
         is_admin: false,
       })
+      setAvatarPreview(null)
     }
+    setAvatarFile(null)
   }, [user])
 
   const validate = () => {
@@ -62,7 +68,7 @@ function UserForm({ user, onSave, onClose }) {
     if (!validate()) return
 
     setSaving(true)
-    const success = await onSave(formData)
+    const success = await onSave(formData, avatarFile)
     setSaving(false)
     if (success) {
       onClose()
@@ -71,10 +77,35 @@ function UserForm({ user, onSave, onClose }) {
 
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }))
-    // Clear error when user types
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: null }))
     }
+  }
+
+  const handleFileSelect = (e) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      if (!file.type.startsWith('image/')) {
+        alert('Veuillez sélectionner une image')
+        return
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        alert('L\'image ne doit pas dépasser 5 Mo')
+        return
+      }
+      setAvatarFile(file)
+      const reader = new FileReader()
+      reader.onload = (e) => setAvatarPreview(e.target.result)
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const getInitials = () => {
+    if (formData.first_name) return formData.first_name[0].toUpperCase()
+    if (formData.username) return formData.username[0].toUpperCase()
+    if (formData.email) return formData.email[0].toUpperCase()
+    if (user?.email) return user.email[0].toUpperCase()
+    return '?'
   }
 
   return (
@@ -87,6 +118,31 @@ function UserForm({ user, onSave, onClose }) {
 
         <form onSubmit={handleSubmit}>
           <div className="modal-body">
+            {/* Avatar upload section */}
+            <div className="avatar-upload-section">
+              <div className="avatar-preview">
+                {avatarPreview ? (
+                  <img src={avatarPreview} alt="Avatar" />
+                ) : (
+                  getInitials()
+                )}
+              </div>
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileSelect}
+                accept="image/*"
+                style={{ display: 'none' }}
+              />
+              <button
+                type="button"
+                className="avatar-upload-btn"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                {avatarPreview ? 'Changer la photo' : 'Ajouter une photo'}
+              </button>
+            </div>
+
             <div className="form-grid">
               {!isEditing && (
                 <>
