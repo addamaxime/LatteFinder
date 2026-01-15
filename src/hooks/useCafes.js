@@ -12,7 +12,7 @@ export function useCafes(latteType = null) {
       setError(null);
 
       let query = supabase
-        .from('cafes')
+        .from('coffees')
         .select('*')
         .eq('is_active', true);
 
@@ -61,7 +61,7 @@ export function useCafe(id) {
         setError(null);
 
         const { data, error: fetchError } = await supabase
-          .from('cafes')
+          .from('coffees')
           .select('*')
           .eq('id', id)
           .single();
@@ -106,7 +106,7 @@ export function useNearestCafes(latitude, longitude, radius = 10) {
         // For now, fetch all cafes and filter by distance client-side
         // In production, you might want to use PostGIS for geospatial queries
         const { data, error: fetchError } = await supabase
-          .from('cafes')
+          .from('coffees')
           .select('*')
           .eq('is_active', true);
 

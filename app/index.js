@@ -23,7 +23,13 @@ import { useFavorites } from '../src/context/FavoritesContext';
 import { useLanguage } from '../src/context/LanguageContext';
 import { useTheme } from '../src/context/ThemeContext';
 import { useCafes } from '../src/hooks/useCafes';
-import latteTypes from '../src/data/cafes.json';
+
+const LATTE_TYPES = [
+  { id: 'matcha', name: 'Matcha', color: '#8BC34A', image: 'https://images.unsplash.com/photo-1536256263959-770b48d82b0a?w=200' },
+  { id: 'chai', name: 'Chai', color: '#FF9800', image: 'https://images.unsplash.com/photo-1578020190125-f4f7c18bc9cb?w=200' },
+  { id: 'cafe', name: 'Café', color: '#795548', image: 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=200' },
+  { id: 'iced', name: 'Iced', color: '#03A9F4', image: 'https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?w=200' },
+];
 
 export default function HomeScreen() {
   const [selectedLatte, setSelectedLatte] = useState('matcha');
@@ -95,7 +101,7 @@ export default function HomeScreen() {
 
   const currentLocation = useCustomLocation ? searchLocation : userLocation;
 
-  const selectedLatteData = latteTypes.latteTypes.find(l => l.id === selectedLatte);
+  const selectedLatteData = LATTE_TYPES.find(l => l.id === selectedLatte);
 
   const handleSearch = () => {
     router.push({
@@ -150,7 +156,7 @@ export default function HomeScreen() {
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={styles.latteList}
             >
-              {latteTypes.latteTypes.map((latte) => {
+              {LATTE_TYPES.map((latte) => {
                 const isSelected = selectedLatte === latte.id;
                 return (
                   <TouchableOpacity
