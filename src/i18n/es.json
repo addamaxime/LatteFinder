@@ -1,0 +1,129 @@
+{
+  "greetings": {
+    "goodMorning": "Buenos días",
+    "goodAfternoon": "Buenas tardes",
+    "goodEvening": "Buenas noches"
+  },
+  "home": {
+    "findBestLattes": "Encuentra los mejores lattes cerca de ti",
+    "whatLatte": "¿Qué latte buscas?",
+    "findLatte": "Encuentra",
+    "cafeFound": "Café encontrado",
+    "cafesFound": "Cafés encontrados",
+    "myPosition": "Mi ubicación",
+    "searchPlace": "Buscar un lugar",
+    "enterAddress": "Ingresa una dirección...",
+    "search": "Buscar",
+    "menu": "Menú",
+    "myFavorites": "Mis favoritos",
+    "settings": "Ajustes"
+  },
+  "results": {
+    "resultsFor": "Resultados para",
+    "sortBy": "Ordenar por:",
+    "distance": "Distancia",
+    "rating": "Calificación",
+    "name": "Nombre",
+    "nearbyCafe": "café cercano",
+    "nearbyCafes": "cafés cercanos",
+    "viewOnMap": "Ver en el mapa",
+    "loading": "Cargando...",
+    "open": "Abierto",
+    "closed": "Cerrado"
+  },
+  "cafe": {
+    "availableLattes": "Lattes disponibles",
+    "location": "Ubicación",
+    "goThere": "Ir allí",
+    "goThereWith": "Ir con",
+    "cancel": "Cancelar",
+    "appleMaps": "Apple Maps",
+    "googleMaps": "Google Maps",
+    "waze": "Waze",
+    "website": "Sitio web"
+  },
+  "favorites": {
+    "title": "Mis favoritos",
+    "noFavorites": "Sin favoritos",
+    "addFavoritesHint": "Añade cafés a tus favoritos para encontrarlos aquí"
+  },
+  "map": {
+    "title": "Mapa",
+    "mapOf": "Mapa -",
+    "cafeMap": "Mapa de cafés",
+    "cafeDisplayed": "café mostrado",
+    "cafesDisplayed": "cafés mostrados"
+  },
+  "settings": {
+    "title": "Ajustes",
+    "account": "Cuenta",
+    "appearance": "Apariencia",
+    "language": "Idioma",
+    "about": "Acerca de",
+    "version": "Versión",
+    "themeAuto": "Automático",
+    "themeAutoDesc": "Sigue la configuración del teléfono",
+    "themeLight": "Claro",
+    "themeLightDesc": "Siempre en modo claro",
+    "themeDark": "Oscuro",
+    "themeDarkDesc": "Siempre en modo oscuro"
+  },
+  "auth": {
+    "login": "Iniciar sesión",
+    "loginSubtitle": "Inicia sesión para sincronizar tus favoritos",
+    "signup": "Registro",
+    "signupSubtitle": "Crea una cuenta para guardar tus favoritos",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "confirmPassword": "Confirmar contraseña",
+    "username": "Nombre de usuario",
+    "signIn": "Iniciar sesión",
+    "signUp": "Registrarse",
+    "signOut": "Cerrar sesión",
+    "noAccount": "¿No tienes cuenta?",
+    "hasAccount": "¿Ya tienes cuenta?",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "syncFavorites": "Inicia sesión para sincronizar tus favoritos en todos tus dispositivos",
+    "signOutConfirm": "¿Seguro que quieres cerrar sesión?",
+    "cancel": "Cancelar"
+  },
+  "errors": {
+    "loginError": "Error de inicio de sesión",
+    "signupError": "Error de registro",
+    "invalidCredentials": "Correo o contraseña inválidos",
+    "fillAllFields": "Por favor complete todos los campos",
+    "passwordMismatch": "Las contraseñas no coinciden",
+    "passwordTooShort": "La contraseña debe tener al menos 6 caracteres"
+  },
+  "success": {
+    "signupSuccess": "Registro exitoso",
+    "checkEmail": "Revisa tu correo para confirmar tu cuenta"
+  },
+  "days": {
+    "monday": "Lunes",
+    "tuesday": "Martes",
+    "wednesday": "Miércoles",
+    "thursday": "Jueves",
+    "friday": "Viernes",
+    "saturday": "Sábado",
+    "sunday": "Domingo"
+  },
+  "lattes": {
+    "matcha": "Matcha Latte",
+    "chai": "Chai Latte",
+    "cafe": "Café Latte",
+    "iced": "Iced Latte"
+  },
+  "common": {
+    "at": "A",
+    "ok": "OK",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "close": "Cerrar",
+    "back": "Volver",
+    "next": "Siguiente",
+    "loading": "Cargando..."
+  }
+}

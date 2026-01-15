@@ -1,0 +1,65 @@
+{
+  "latteTypes": [
+    {
+      "id": "matcha",
+      "name": "Matcha Latte",
+      "image": "https://images.unsplash.com/photo-1536256263959-770b48d82b0a?w=200"
+    },
+    {
+      "id": "chai",
+      "name": "Chai Latte",
+      "image": "https://images.unsplash.com/photo-1594631252845-29fc4cc8cde9?w=200"
+    },
+    {
+      "id": "cafe",
+      "name": "Café Latte",
+      "image": "https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=200"
+    },
+    {
+      "id": "iced",
+      "name": "Iced Latte",
+      "image": "https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?w=200"
+    }
+  ],
+  "cafes": [
+    {
+      "id": 1,
+      "name": "Café Vert",
+      "distance": 300,
+      "description": "Bio & Végétal",
+      "rating": 4.7,
+      "image": "https://images.unsplash.com/photo-1536256263959-770b48d82b0a?w=400",
+      "latteTypes": ["matcha", "chai", "cafe"],
+      "coordinates": {
+        "latitude": 48.8566,
+        "longitude": 2.3522
+      }
+    },
+    {
+      "id": 2,
+      "name": "Le Petit Mug",
+      "distance": 450,
+      "description": "Cosy & Gourmant",
+      "rating": 4.6,
+      "image": "https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=400",
+      "latteTypes": ["matcha", "cafe", "iced"],
+      "coordinates": {
+        "latitude": 48.8576,
+        "longitude": 2.3532
+      }
+    },
+    {
+      "id": 3,
+      "name": "Coffee & Co",
+      "distance": 600,
+      "description": "Trendy Café",
+      "rating": 4.5,
+      "image": "https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?w=400",
+      "latteTypes": ["matcha", "chai", "cafe", "iced"],
+      "coordinates": {
+        "latitude": 48.8556,
+        "longitude": 2.3512
+      }
+    }
+  ]
+}

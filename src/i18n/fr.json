@@ -1,0 +1,129 @@
+{
+  "greetings": {
+    "goodMorning": "Bonjour",
+    "goodAfternoon": "Bon après-midi",
+    "goodEvening": "Bonsoir"
+  },
+  "home": {
+    "findBestLattes": "Trouvez les meilleurs lattes près de vous",
+    "whatLatte": "Quel latte recherchez-vous ?",
+    "findLatte": "Trouvez des",
+    "cafeFound": "Café trouvé",
+    "cafesFound": "Cafés trouvés",
+    "myPosition": "Ma position",
+    "searchPlace": "Rechercher un lieu",
+    "enterAddress": "Saisir une adresse...",
+    "search": "Rechercher",
+    "menu": "Menu",
+    "myFavorites": "Mes favoris",
+    "settings": "Paramètres"
+  },
+  "results": {
+    "resultsFor": "Résultats pour",
+    "sortBy": "Trier par :",
+    "distance": "Distance",
+    "rating": "Note",
+    "name": "Nom",
+    "nearbyCafe": "café à proximité",
+    "nearbyCafes": "cafés à proximité",
+    "viewOnMap": "Voir sur la carte",
+    "loading": "Chargement...",
+    "open": "Ouvert",
+    "closed": "Fermé"
+  },
+  "cafe": {
+    "availableLattes": "Lattes disponibles",
+    "location": "Localisation",
+    "goThere": "S'y rendre",
+    "goThereWith": "S'y rendre avec",
+    "cancel": "Annuler",
+    "appleMaps": "Apple Plans",
+    "googleMaps": "Google Maps",
+    "waze": "Waze",
+    "website": "Site web"
+  },
+  "favorites": {
+    "title": "Mes favoris",
+    "noFavorites": "Aucun favori",
+    "addFavoritesHint": "Ajoutez des cafés à vos favoris pour les retrouver ici"
+  },
+  "map": {
+    "title": "Carte",
+    "mapOf": "Carte -",
+    "cafeMap": "Carte des cafés",
+    "cafeDisplayed": "café affiché",
+    "cafesDisplayed": "cafés affichés"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "account": "Compte",
+    "appearance": "Apparence",
+    "language": "Langue",
+    "about": "À propos",
+    "version": "Version",
+    "themeAuto": "Automatique",
+    "themeAutoDesc": "Suit les réglages du téléphone",
+    "themeLight": "Clair",
+    "themeLightDesc": "Toujours en mode clair",
+    "themeDark": "Sombre",
+    "themeDarkDesc": "Toujours en mode sombre"
+  },
+  "auth": {
+    "login": "Connexion",
+    "loginSubtitle": "Connectez-vous pour synchroniser vos favoris",
+    "signup": "Inscription",
+    "signupSubtitle": "Créez un compte pour sauvegarder vos favoris",
+    "email": "Email",
+    "password": "Mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "username": "Nom d'utilisateur",
+    "signIn": "Se connecter",
+    "signUp": "S'inscrire",
+    "signOut": "Se déconnecter",
+    "noAccount": "Pas encore de compte ?",
+    "hasAccount": "Déjà un compte ?",
+    "forgotPassword": "Mot de passe oublié ?",
+    "syncFavorites": "Connectez-vous pour synchroniser vos favoris sur tous vos appareils",
+    "signOutConfirm": "Voulez-vous vraiment vous déconnecter ?",
+    "cancel": "Annuler"
+  },
+  "errors": {
+    "loginError": "Erreur de connexion",
+    "signupError": "Erreur d'inscription",
+    "invalidCredentials": "Email ou mot de passe incorrect",
+    "fillAllFields": "Veuillez remplir tous les champs",
+    "passwordMismatch": "Les mots de passe ne correspondent pas",
+    "passwordTooShort": "Le mot de passe doit contenir au moins 6 caractères"
+  },
+  "success": {
+    "signupSuccess": "Inscription réussie",
+    "checkEmail": "Vérifiez votre email pour confirmer votre compte"
+  },
+  "days": {
+    "monday": "Lundi",
+    "tuesday": "Mardi",
+    "wednesday": "Mercredi",
+    "thursday": "Jeudi",
+    "friday": "Vendredi",
+    "saturday": "Samedi",
+    "sunday": "Dimanche"
+  },
+  "lattes": {
+    "matcha": "Matcha Latte",
+    "chai": "Chai Latte",
+    "cafe": "Café Latte",
+    "iced": "Iced Latte"
+  },
+  "common": {
+    "at": "À",
+    "ok": "OK",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "close": "Fermer",
+    "back": "Retour",
+    "next": "Suivant",
+    "loading": "Chargement..."
+  }
+}

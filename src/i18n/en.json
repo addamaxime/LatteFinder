@@ -1,0 +1,129 @@
+{
+  "greetings": {
+    "goodMorning": "Good morning",
+    "goodAfternoon": "Good afternoon",
+    "goodEvening": "Good evening"
+  },
+  "home": {
+    "findBestLattes": "Find the best lattes near you",
+    "whatLatte": "What latte are you looking for?",
+    "findLatte": "Find",
+    "cafeFound": "Cafe found",
+    "cafesFound": "Cafes found",
+    "myPosition": "My location",
+    "searchPlace": "Search a place",
+    "enterAddress": "Enter an address...",
+    "search": "Search",
+    "menu": "Menu",
+    "myFavorites": "My favorites",
+    "settings": "Settings"
+  },
+  "results": {
+    "resultsFor": "Results for",
+    "sortBy": "Sort by:",
+    "distance": "Distance",
+    "rating": "Rating",
+    "name": "Name",
+    "nearbyCafe": "nearby cafe",
+    "nearbyCafes": "nearby cafes",
+    "viewOnMap": "View on map",
+    "loading": "Loading...",
+    "open": "Open",
+    "closed": "Closed"
+  },
+  "cafe": {
+    "availableLattes": "Available lattes",
+    "location": "Location",
+    "goThere": "Go there",
+    "goThereWith": "Go there with",
+    "cancel": "Cancel",
+    "appleMaps": "Apple Maps",
+    "googleMaps": "Google Maps",
+    "waze": "Waze",
+    "website": "Website"
+  },
+  "favorites": {
+    "title": "My favorites",
+    "noFavorites": "No favorites",
+    "addFavoritesHint": "Add cafes to your favorites to find them here"
+  },
+  "map": {
+    "title": "Map",
+    "mapOf": "Map -",
+    "cafeMap": "Cafe map",
+    "cafeDisplayed": "cafe displayed",
+    "cafesDisplayed": "cafes displayed"
+  },
+  "settings": {
+    "title": "Settings",
+    "account": "Account",
+    "appearance": "Appearance",
+    "language": "Language",
+    "about": "About",
+    "version": "Version",
+    "themeAuto": "Automatic",
+    "themeAutoDesc": "Follows phone settings",
+    "themeLight": "Light",
+    "themeLightDesc": "Always light mode",
+    "themeDark": "Dark",
+    "themeDarkDesc": "Always dark mode"
+  },
+  "auth": {
+    "login": "Login",
+    "loginSubtitle": "Sign in to sync your favorites",
+    "signup": "Sign Up",
+    "signupSubtitle": "Create an account to save your favorites",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "username": "Username",
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "signOut": "Sign out",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "forgotPassword": "Forgot password?",
+    "syncFavorites": "Sign in to sync your favorites across all your devices",
+    "signOutConfirm": "Are you sure you want to sign out?",
+    "cancel": "Cancel"
+  },
+  "errors": {
+    "loginError": "Login error",
+    "signupError": "Signup error",
+    "invalidCredentials": "Invalid email or password",
+    "fillAllFields": "Please fill all fields",
+    "passwordMismatch": "Passwords do not match",
+    "passwordTooShort": "Password must be at least 6 characters"
+  },
+  "success": {
+    "signupSuccess": "Signup successful",
+    "checkEmail": "Check your email to confirm your account"
+  },
+  "days": {
+    "monday": "Monday",
+    "tuesday": "Tuesday",
+    "wednesday": "Wednesday",
+    "thursday": "Thursday",
+    "friday": "Friday",
+    "saturday": "Saturday",
+    "sunday": "Sunday"
+  },
+  "lattes": {
+    "matcha": "Matcha Latte",
+    "chai": "Chai Latte",
+    "cafe": "Café Latte",
+    "iced": "Iced Latte"
+  },
+  "common": {
+    "at": "At",
+    "ok": "OK",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "loading": "Loading..."
+  }
+}
