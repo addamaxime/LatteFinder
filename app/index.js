@@ -353,18 +353,23 @@ export default function HomeScreen() {
               </TouchableOpacity>
             </View>
 
-            {isAuthenticated && (
-              <TouchableOpacity
-                style={[styles.menuItem, { borderBottomColor: theme.border }]}
-                onPress={() => {
-                  setShowMenu(false);
+            <TouchableOpacity
+              style={[styles.menuItem, { borderBottomColor: theme.border }]}
+              onPress={() => {
+                setShowMenu(false);
+                if (isAuthenticated) {
                   router.push('/profile');
-                }}
-              >
-                <Text style={styles.menuItemIcon}>👤</Text>
-                <Text style={[styles.menuItemText, { color: theme.text }]}>{t('home.myProfile')}</Text>
-              </TouchableOpacity>
-            )}
+                } else {
+                  router.push('/auth/login');
+                }
+              }}
+            >
+              <Text style={styles.menuItemIcon}>👤</Text>
+              <Text style={[styles.menuItemText, { color: theme.text }]}>{t('home.myProfile')}</Text>
+              {!isAuthenticated && (
+                <Text style={[styles.menuItemSubtext, { color: theme.primary }]}>{t('auth.signIn')}</Text>
+              )}
+            </TouchableOpacity>
 
             <TouchableOpacity
               style={[styles.menuItem, { borderBottomColor: theme.border }]}
@@ -775,5 +780,9 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 13,
     fontWeight: '600',
+  },
+  menuItemSubtext: {
+    fontSize: 13,
+    fontWeight: '500',
   },
 });

@@ -12,12 +12,10 @@ import { router } from 'expo-router';
 import { menuState } from '../src/utils/menuState';
 import { useLanguage } from '../src/context/LanguageContext';
 import { useTheme } from '../src/context/ThemeContext';
-import { useAuth } from '../src/context/AuthContext';
 
 export default function SettingsScreen() {
   const { language, changeLanguage, t, languages } = useLanguage();
   const { theme, themeMode, setThemeMode } = useTheme();
-  const { isAuthenticated } = useAuth();
 
   const themeOptions = [
     {
@@ -70,37 +68,6 @@ export default function SettingsScreen() {
       </LinearGradient>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-          {/* Account Section - Only show if not authenticated */}
-          {!isAuthenticated && (
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>{t('settings.account')}</Text>
-              <View>
-                <Text style={styles.accountDescription}>{t('auth.syncFavorites')}</Text>
-                <TouchableOpacity
-                  style={styles.loginButton}
-                  onPress={() => router.push('/auth/login')}
-                >
-                  <LinearGradient
-                    colors={theme.mode === 'dark' ? ['#6BAF7B', '#2D5A3D', '#1A3D2A'] : ['#5D9B6B', '#3D6B4B', '#1E4D2B']}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 0 }}
-                    style={styles.loginButtonGradient}
-                  >
-                    <Text style={styles.loginButtonText}>{t('auth.signIn')}</Text>
-                  </LinearGradient>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.signupLink}
-                  onPress={() => router.push('/auth/signup')}
-                >
-                  <Text style={styles.signupLinkText}>
-                    {t('auth.noAccount')} {t('auth.signUp')}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          )}
-
           {/* Appearance Section */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>{t('settings.appearance')}</Text>
@@ -334,35 +301,5 @@ const createStyles = (theme) => StyleSheet.create({
   infoValue: {
     fontSize: 15,
     color: theme.textMuted,
-  },
-  accountDescription: {
-    fontSize: 14,
-    color: theme.textMuted,
-    marginBottom: 15,
-    lineHeight: 20,
-  },
-  loginButton: {
-    borderRadius: 25,
-    overflow: 'hidden',
-    marginBottom: 12,
-  },
-  loginButtonGradient: {
-    paddingVertical: 14,
-    alignItems: 'center',
-    borderRadius: 25,
-  },
-  loginButtonText: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#FFFFFF',
-  },
-  signupLink: {
-    alignItems: 'center',
-    paddingVertical: 8,
-  },
-  signupLinkText: {
-    fontSize: 14,
-    color: theme.primary,
-    fontWeight: '500',
   },
 });
