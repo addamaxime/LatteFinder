@@ -15,6 +15,7 @@
     "enterAddress": "Saisir une adresse...",
     "search": "Rechercher",
     "menu": "Menu",
+    "myProfile": "Mes infos",
     "myFavorites": "Mes favoris",
     "settings": "Paramètres"
   },
@@ -46,6 +47,24 @@
     "title": "Mes favoris",
     "noFavorites": "Aucun favori",
     "addFavoritesHint": "Ajoutez des cafés à vos favoris pour les retrouver ici"
+  },
+  "profile": {
+    "title": "Mes infos",
+    "personalInfo": "Informations personnelles",
+    "firstName": "Prénom",
+    "firstNamePlaceholder": "Votre prénom",
+    "lastName": "Nom",
+    "lastNamePlaceholder": "Votre nom",
+    "username": "Nom d'utilisateur",
+    "usernamePlaceholder": "Entrez votre nom d'utilisateur",
+    "usernameRequired": "Le nom d'utilisateur est requis",
+    "email": "Email",
+    "emailHint": "L'email ne peut pas être modifié",
+    "updateSuccess": "Profil mis à jour avec succès",
+    "updateError": "Erreur lors de la mise à jour du profil",
+    "tapToChange": "Appuyez pour changer la photo",
+    "permissionDenied": "Permission d'accès à la galerie refusée",
+    "uploadError": "Erreur lors de l'upload de l'image"
   },
   "map": {
     "title": "Carte",
@@ -124,6 +143,8 @@
     "close": "Fermer",
     "back": "Retour",
     "next": "Suivant",
-    "loading": "Chargement..."
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "success": "Succès"
   }
 }

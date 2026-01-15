@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   View,
   Text,
@@ -15,13 +15,16 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
+import { useFocusEffect } from '@react-navigation/native';
+import { menuState } from '../src/utils/menuState';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { useFavorites } from '../src/context/FavoritesContext';
 import { useLanguage } from '../src/context/LanguageContext';
 import { useTheme } from '../src/context/ThemeContext';
+import { useAuth } from '../src/context/AuthContext';
 import { useCafes } from '../src/hooks/useCafes';
 
 const LATTE_TYPES = [
@@ -44,7 +47,24 @@ export default function HomeScreen() {
   const { favorites } = useFavorites();
   const { t } = useLanguage();
   const { theme } = useTheme();
+  const insets = useSafeAreaInsets();
+  const { user, isAuthenticated } = useAuth();
   const { cafes, loading: cafesLoading } = useCafes(selectedLatte);
+
+  // Open menu when coming back from a sub-screen
+  useFocusEffect(
+    useCallback(() => {
+      if (menuState.shouldOpenOnFocus) {
+        setShowMenu(true);
+        menuState.shouldOpenOnFocus = false;
+      }
+    }, [])
+  );
+
+  // Close menu handler
+  const handleCloseMenu = () => {
+    setShowMenu(false);
+  };
 
   useEffect(() => {
     (async () => {
@@ -318,49 +338,60 @@ export default function HomeScreen() {
         visible={showMenu}
         animationType="fade"
         transparent={true}
-        onRequestClose={() => setShowMenu(false)}
+        onRequestClose={handleCloseMenu}
       >
         <TouchableOpacity
           style={[styles.menuOverlay, { backgroundColor: theme.overlay }]}
           activeOpacity={1}
-          onPress={() => setShowMenu(false)}
+          onPress={handleCloseMenu}
         >
-          <View style={[styles.menuContainer, { backgroundColor: theme.card }]}>
-            <SafeAreaView edges={['top']} style={styles.menuSafeArea}>
-              <View style={[styles.menuHeader, { borderBottomColor: theme.border }]}>
-                <Text style={[styles.menuTitle, { color: theme.primary }]}>{t('home.menu')}</Text>
-                <TouchableOpacity onPress={() => setShowMenu(false)}>
-                  <Text style={[styles.menuCloseIcon, { color: theme.textMuted }]}>✕</Text>
-                </TouchableOpacity>
-              </View>
+          <View style={[styles.menuContainer, { backgroundColor: theme.card, paddingTop: insets.top }]}>
+            <View style={[styles.menuHeader, { borderBottomColor: theme.border }]}>
+              <Text style={[styles.menuTitle, { color: theme.primary }]}>{t('home.menu')}</Text>
+              <TouchableOpacity onPress={handleCloseMenu}>
+                <Text style={[styles.menuCloseIcon, { color: theme.textMuted }]}>✕</Text>
+              </TouchableOpacity>
+            </View>
 
+            {isAuthenticated && (
               <TouchableOpacity
                 style={[styles.menuItem, { borderBottomColor: theme.border }]}
                 onPress={() => {
                   setShowMenu(false);
-                  router.push('/favorites');
+                  router.push('/profile');
                 }}
               >
-                <Text style={styles.menuItemIcon}>❤️</Text>
-                <Text style={[styles.menuItemText, { color: theme.text }]}>{t('home.myFavorites')}</Text>
-                {favorites.length > 0 && (
-                  <View style={[styles.menuItemBadge, { backgroundColor: theme.primary }]}>
-                    <Text style={styles.menuItemBadgeText}>{favorites.length}</Text>
-                  </View>
-                )}
+                <Text style={styles.menuItemIcon}>👤</Text>
+                <Text style={[styles.menuItemText, { color: theme.text }]}>{t('home.myProfile')}</Text>
               </TouchableOpacity>
+            )}
 
-              <TouchableOpacity
-                style={[styles.menuItem, { borderBottomColor: theme.border }]}
-                onPress={() => {
-                  setShowMenu(false);
-                  router.push('/settings');
-                }}
-              >
-                <Text style={styles.menuItemIcon}>⚙️</Text>
-                <Text style={[styles.menuItemText, { color: theme.text }]}>{t('home.settings')}</Text>
-              </TouchableOpacity>
-            </SafeAreaView>
+            <TouchableOpacity
+              style={[styles.menuItem, { borderBottomColor: theme.border }]}
+              onPress={() => {
+                setShowMenu(false);
+                router.push('/favorites');
+              }}
+            >
+              <Text style={styles.menuItemIcon}>❤️</Text>
+              <Text style={[styles.menuItemText, { color: theme.text }]}>{t('home.myFavorites')}</Text>
+              {favorites.length > 0 && (
+                <View style={[styles.menuItemBadge, { backgroundColor: theme.primary }]}>
+                  <Text style={styles.menuItemBadgeText}>{favorites.length}</Text>
+                </View>
+              )}
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.menuItem, { borderBottomColor: theme.border }]}
+              onPress={() => {
+                setShowMenu(false);
+                router.push('/settings');
+              }}
+            >
+              <Text style={styles.menuItemIcon}>⚙️</Text>
+              <Text style={[styles.menuItemText, { color: theme.text }]}>{t('home.settings')}</Text>
+            </TouchableOpacity>
           </View>
         </TouchableOpacity>
       </Modal>
@@ -687,15 +718,13 @@ const styles = StyleSheet.create({
   },
   menuContainer: {
     width: '75%',
+    height: '100%',
     backgroundColor: '#FFFFFF',
     shadowColor: '#000',
     shadowOffset: { width: 2, height: 0 },
     shadowOpacity: 0.25,
     shadowRadius: 10,
     elevation: 10,
-  },
-  menuSafeArea: {
-    flex: 1,
   },
   menuHeader: {
     flexDirection: 'row',

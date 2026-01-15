@@ -9,6 +9,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
+import { menuState } from '../src/utils/menuState';
 import { useFavorites } from '../src/context/FavoritesContext';
 import { useLocation } from '../src/context/LocationContext';
 import { useLanguage } from '../src/context/LanguageContext';
@@ -37,7 +38,10 @@ export default function FavoritesScreen() {
           <View style={styles.header}>
             <TouchableOpacity
               style={styles.backButton}
-              onPress={() => router.back()}
+              onPress={() => {
+                menuState.shouldOpenOnFocus = true;
+                router.back();
+              }}
             >
               <Text style={styles.backArrow}>‹</Text>
             </TouchableOpacity>

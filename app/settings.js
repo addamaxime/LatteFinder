@@ -5,11 +5,11 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-  Alert,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
+import { menuState } from '../src/utils/menuState';
 import { useLanguage } from '../src/context/LanguageContext';
 import { useTheme } from '../src/context/ThemeContext';
 import { useAuth } from '../src/context/AuthContext';
@@ -17,18 +17,7 @@ import { useAuth } from '../src/context/AuthContext';
 export default function SettingsScreen() {
   const { language, changeLanguage, t, languages } = useLanguage();
   const { theme, themeMode, setThemeMode } = useTheme();
-  const { user, profile, isAuthenticated, signOut } = useAuth();
-
-  const handleSignOut = () => {
-    Alert.alert(
-      t('auth.signOut'),
-      t('auth.signOutConfirm'),
-      [
-        { text: t('common.cancel'), style: 'cancel' },
-        { text: t('auth.signOut'), style: 'destructive', onPress: signOut },
-      ]
-    );
-  };
+  const { isAuthenticated } = useAuth();
 
   const themeOptions = [
     {
@@ -64,7 +53,10 @@ export default function SettingsScreen() {
           <View style={styles.header}>
             <TouchableOpacity
               style={styles.backButton}
-              onPress={() => router.back()}
+              onPress={() => {
+                menuState.shouldOpenOnFocus = true;
+                router.back();
+              }}
             >
               <Text style={styles.backArrow}>‹</Text>
             </TouchableOpacity>
@@ -78,27 +70,10 @@ export default function SettingsScreen() {
       </LinearGradient>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-          {/* Account Section */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>{t('settings.account')}</Text>
-            {isAuthenticated ? (
-              <View>
-                <View style={styles.profileInfo}>
-                  <View style={styles.avatarContainer}>
-                    <Text style={styles.avatarText}>
-                      {(profile?.username || user?.email || '?')[0].toUpperCase()}
-                    </Text>
-                  </View>
-                  <View style={styles.profileDetails}>
-                    <Text style={styles.profileName}>{profile?.username || t('auth.username')}</Text>
-                    <Text style={styles.profileEmail}>{user?.email}</Text>
-                  </View>
-                </View>
-                <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
-                  <Text style={styles.signOutText}>{t('auth.signOut')}</Text>
-                </TouchableOpacity>
-              </View>
-            ) : (
+          {/* Account Section - Only show if not authenticated */}
+          {!isAuthenticated && (
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>{t('settings.account')}</Text>
               <View>
                 <Text style={styles.accountDescription}>{t('auth.syncFavorites')}</Text>
                 <TouchableOpacity
@@ -123,8 +98,8 @@ export default function SettingsScreen() {
                   </Text>
                 </TouchableOpacity>
               </View>
-            )}
-          </View>
+            </View>
+          )}
 
           {/* Appearance Section */}
           <View style={styles.section}>
@@ -359,50 +334,6 @@ const createStyles = (theme) => StyleSheet.create({
   infoValue: {
     fontSize: 15,
     color: theme.textMuted,
-  },
-  profileInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 15,
-  },
-  avatarContainer: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: theme.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 15,
-  },
-  avatarText: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: '#FFFFFF',
-  },
-  profileDetails: {
-    flex: 1,
-  },
-  profileName: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: theme.text,
-  },
-  profileEmail: {
-    fontSize: 14,
-    color: theme.textMuted,
-    marginTop: 2,
-  },
-  signOutButton: {
-    backgroundColor: theme.inputBackground,
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 12,
-    alignItems: 'center',
-  },
-  signOutText: {
-    fontSize: 15,
-    color: '#E53935',
-    fontWeight: '500',
   },
   accountDescription: {
     fontSize: 14,

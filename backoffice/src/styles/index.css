@@ -40,6 +40,51 @@ body {
   margin-top: 4px;
 }
 
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 4px;
+  background: rgba(0,0,0,0.1);
+  padding: 4px;
+  border-radius: 10px;
+  margin-bottom: 24px;
+}
+
+.tab {
+  padding: 12px 32px;
+  border: none;
+  background: transparent;
+  color: rgba(255,255,255,0.7);
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.tab:hover {
+  color: white;
+  background: rgba(255,255,255,0.1);
+}
+
+.tab.active {
+  background: white;
+  color: #2D5A3D;
+}
+
+.tab-count {
+  background: rgba(255,255,255,0.2);
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 12px;
+  margin-left: 8px;
+}
+
+.tab.active .tab-count {
+  background: #e8f5e9;
+  color: #2D5A3D;
+}
+
 .btn-add {
   background: white;
   color: #2D5A3D;
@@ -155,15 +200,47 @@ tr:hover {
   color: #999;
 }
 
-.cafe-name {
+.cafe-name, .user-name {
   font-weight: 600;
   color: #2D5A3D;
 }
 
-.cafe-address {
+.cafe-address, .user-email {
   font-size: 13px;
   color: #888;
   margin-top: 4px;
+}
+
+/* User avatar */
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6BAF7B, #4A7C59);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.admin-badge {
+  background: #fff3e0;
+  color: #e65100;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.user-badge {
+  background: #e3f2fd;
+  color: #1976d2;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
 }
 
 .latte-tags {
@@ -369,6 +446,16 @@ tr:hover {
 .form-group select:focus {
   outline: none;
   border-color: #6BAF7B;
+}
+
+.form-group input.input-error {
+  border-color: #d32f2f;
+}
+
+.error-text {
+  color: #d32f2f;
+  font-size: 12px;
+  margin-top: 4px;
 }
 
 .form-group textarea {

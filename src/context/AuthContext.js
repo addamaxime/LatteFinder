@@ -105,6 +105,49 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const uploadAvatar = async (uri) => {
+    try {
+      // Get file extension
+      const ext = uri.split('.').pop();
+      const fileName = `${user.id}-${Date.now()}.${ext}`;
+      const filePath = `avatars/${fileName}`;
+
+      // Fetch the image and convert to blob
+      const response = await fetch(uri);
+      const blob = await response.blob();
+
+      // Upload to Supabase Storage
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, blob, {
+          contentType: `image/${ext}`,
+          upsert: true,
+        });
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      // Update profile with new avatar URL
+      const { data, error } = await supabase
+        .from('profiles')
+        .update({ avatar_url: publicUrl })
+        .eq('id', user.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      setProfile(data);
+      return { data, error: null };
+    } catch (error) {
+      console.error('Error uploading avatar:', error);
+      return { data: null, error };
+    }
+  };
+
   const resetPassword = async (email) => {
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email);
@@ -123,6 +166,7 @@ export function AuthProvider({ children }) {
     signIn,
     signOut,
     updateProfile,
+    uploadAvatar,
     resetPassword,
     isAuthenticated: !!user,
   };

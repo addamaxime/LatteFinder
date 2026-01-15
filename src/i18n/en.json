@@ -16,6 +16,7 @@
     "search": "Search",
     "menu": "Menu",
     "myFavorites": "My favorites",
+    "myProfile": "My profile",
     "settings": "Settings"
   },
   "results": {
@@ -46,6 +47,24 @@
     "title": "My favorites",
     "noFavorites": "No favorites",
     "addFavoritesHint": "Add cafes to your favorites to find them here"
+  },
+  "profile": {
+    "title": "My profile",
+    "personalInfo": "Personal information",
+    "firstName": "First name",
+    "firstNamePlaceholder": "Your first name",
+    "lastName": "Last name",
+    "lastNamePlaceholder": "Your last name",
+    "username": "Username",
+    "usernamePlaceholder": "Enter your username",
+    "usernameRequired": "Username is required",
+    "email": "Email",
+    "emailHint": "Email cannot be changed",
+    "updateSuccess": "Profile updated successfully",
+    "updateError": "Error updating profile",
+    "tapToChange": "Tap to change photo",
+    "permissionDenied": "Gallery permission denied",
+    "uploadError": "Error uploading image"
   },
   "map": {
     "title": "Map",
@@ -124,6 +143,8 @@
     "close": "Close",
     "back": "Back",
     "next": "Next",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success"
   }
 }
