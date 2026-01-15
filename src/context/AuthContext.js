@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { decode } from 'base64-arraybuffer';
 import { supabase } from '../lib/supabase';
 
 const AuthContext = createContext({});
@@ -105,31 +106,36 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const uploadAvatar = async (uri) => {
+  const uploadAvatar = async (base64Data, uri) => {
     try {
-      // Get file extension
-      const ext = uri.split('.').pop();
+      // Verify user is authenticated
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        throw new Error('User not authenticated');
+      }
+
+      // Get file extension from URI
+      const ext = uri.split('.').pop()?.split('?')[0] || 'jpg';
       const fileName = `${user.id}-${Date.now()}.${ext}`;
-      const filePath = `avatars/${fileName}`;
 
-      // Fetch the image and convert to blob
-      const response = await fetch(uri);
-      const blob = await response.blob();
+      console.log('Uploading avatar:', fileName, 'user:', user.id);
 
-      // Upload to Supabase Storage
+      // Decode base64 to ArrayBuffer and upload
       const { error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(filePath, blob, {
+        .upload(fileName, decode(base64Data), {
           contentType: `image/${ext}`,
-          upsert: true,
         });
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.error('Upload error details:', JSON.stringify(uploadError));
+        throw uploadError;
+      }
 
       // Get public URL
       const { data: { publicUrl } } = supabase.storage
         .from('avatars')
-        .getPublicUrl(filePath);
+        .getPublicUrl(fileName);
 
       // Update profile with new avatar URL
       const { data, error } = await supabase

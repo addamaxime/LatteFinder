@@ -68,12 +68,14 @@ export default function ProfileScreen() {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [1, 1],
-      quality: 0.8,
+      quality: 0.7,
+      base64: true, // Request base64 data for reliable upload
     });
 
     if (!result.canceled && result.assets[0]) {
       setUploadingImage(true);
-      const { error } = await uploadAvatar(result.assets[0].uri);
+      const asset = result.assets[0];
+      const { error } = await uploadAvatar(asset.base64, asset.uri);
       setUploadingImage(false);
 
       if (error) {
