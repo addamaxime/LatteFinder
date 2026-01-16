@@ -14,6 +14,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
+import * as FileSystem from 'expo-file-system';
 import { menuState } from '../src/utils/menuState';
 import { useLanguage } from '../src/context/LanguageContext';
 import { useTheme } from '../src/context/ThemeContext';
@@ -64,23 +65,34 @@ export default function ProfileScreen() {
       return;
     }
 
+    // Open picker quickly without base64 conversion
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ['images'],
       allowsEditing: true,
       aspect: [1, 1],
       quality: 0.7,
-      base64: true, // Request base64 data for reliable upload
     });
 
     if (!result.canceled && result.assets[0]) {
       setUploadingImage(true);
       const asset = result.assets[0];
-      const { error } = await uploadAvatar(asset.base64, asset.uri);
-      setUploadingImage(false);
 
-      if (error) {
+      try {
+        // Convert to base64 after selection
+        const base64 = await FileSystem.readAsStringAsync(asset.uri, {
+          encoding: FileSystem.EncodingType.Base64,
+        });
+
+        const { error } = await uploadAvatar(base64, asset.uri);
+
+        if (error) {
+          Alert.alert(t('common.error'), t('profile.uploadError'));
+        }
+      } catch (err) {
         Alert.alert(t('common.error'), t('profile.uploadError'));
       }
+
+      setUploadingImage(false);
     }
   };
 

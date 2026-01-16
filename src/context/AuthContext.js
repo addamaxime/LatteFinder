@@ -1,12 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Platform } from 'react-native';
 import { decode } from 'base64-arraybuffer';
-import * as AppleAuthentication from 'expo-apple-authentication';
-import * as Google from 'expo-auth-session/providers/google';
-import * as WebBrowser from 'expo-web-browser';
 import { supabase } from '../lib/supabase';
-
-WebBrowser.maybeCompleteAuthSession();
 
 const AuthContext = createContext({});
 
@@ -170,59 +164,6 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const signInWithGoogle = async (idToken) => {
-    try {
-      const { data, error } = await supabase.auth.signInWithIdToken({
-        provider: 'google',
-        token: idToken,
-      });
-
-      if (error) throw error;
-      return { data, error: null };
-    } catch (error) {
-      console.error('Google sign-in error:', error);
-      return { data: null, error };
-    }
-  };
-
-  const signInWithApple = async () => {
-    try {
-      const credential = await AppleAuthentication.signInAsync({
-        requestedScopes: [
-          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
-          AppleAuthentication.AppleAuthenticationScope.EMAIL,
-        ],
-      });
-
-      if (credential.identityToken) {
-        const { data, error } = await supabase.auth.signInWithIdToken({
-          provider: 'apple',
-          token: credential.identityToken,
-        });
-
-        if (error) throw error;
-
-        // Update profile with Apple name if provided
-        if (data?.user && (credential.fullName?.givenName || credential.fullName?.familyName)) {
-          await supabase.from('profiles').update({
-            first_name: credential.fullName?.givenName || null,
-            last_name: credential.fullName?.familyName || null,
-          }).eq('id', data.user.id);
-        }
-
-        return { data, error: null };
-      }
-
-      throw new Error('No identity token received from Apple');
-    } catch (error) {
-      if (error.code === 'ERR_REQUEST_CANCELED') {
-        return { data: null, error: null }; // User cancelled
-      }
-      console.error('Apple sign-in error:', error);
-      return { data: null, error };
-    }
-  };
-
   const value = {
     user,
     profile,
@@ -230,8 +171,6 @@ export function AuthProvider({ children }) {
     signUp,
     signIn,
     signOut,
-    signInWithGoogle,
-    signInWithApple,
     updateProfile,
     uploadAvatar,
     resetPassword,
