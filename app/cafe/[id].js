@@ -155,7 +155,7 @@ export default function CafeScreen() {
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
           {/* Image */}
-          <AnimatedImage source={{ uri: cafe.image }} style={styles.cafeImage} />
+          <AnimatedImage source={{ uri: cafe.image || 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800' }} style={styles.cafeImage} />
 
           {/* Info Card */}
           <View style={[styles.infoCard, { backgroundColor: theme.card }]}>

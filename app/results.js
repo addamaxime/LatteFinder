@@ -154,7 +154,7 @@ export default function ResultsScreen() {
                   onPress={() => router.push(`/cafe/${cafe.id}`)}
                 >
                   <AnimatedImage
-                    source={{ uri: cafe.image }}
+                    source={{ uri: cafe.image || 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400' }}
                     style={styles.cafeImage}
                   />
                   {isOpen !== null && (

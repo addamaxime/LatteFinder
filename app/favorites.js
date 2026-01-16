@@ -85,7 +85,7 @@ export default function FavoritesScreen() {
                   activeOpacity={0.9}
                   onPress={() => router.push(`/cafe/${cafe.id}`)}
                 >
-                  <AnimatedImage source={{ uri: cafe.image }} style={styles.cafeImage} />
+                  <AnimatedImage source={{ uri: cafe.image || 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400' }} style={styles.cafeImage} />
                   <View style={styles.cafeInfo}>
                     <Text style={[styles.cafeName, { color: theme.primary }]}>{cafe.name}</Text>
                     <Text style={[styles.cafeDetails, { color: theme.textMuted }]}>

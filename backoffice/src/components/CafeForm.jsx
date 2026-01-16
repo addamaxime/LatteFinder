@@ -76,21 +76,34 @@ function CafeForm({ cafe, importedData, onSave, onClose }) {
 
   useEffect(() => {
     if (cafe) {
+      // Support both 'opening_hours' and 'hours' column names
+      const hoursData = cafe.opening_hours || cafe.hours
+
       // Parse hours from database format
-      const parsedHours = { ...defaultHours }
-      if (cafe.opening_hours) {
-        DAYS.forEach(day => {
-          if (cafe.opening_hours[day.key] === null) {
-            parsedHours[day.key] = { open: '', close: '', closed: true }
-          } else if (cafe.opening_hours[day.key]) {
-            parsedHours[day.key] = {
-              open: cafe.opening_hours[day.key].open || '',
-              close: cafe.opening_hours[day.key].close || '',
-              closed: false
-            }
+      const parsedHours = {}
+      DAYS.forEach(day => {
+        const dayData = hoursData?.[day.key]
+        const dayDataLower = typeof dayData === 'string' ? dayData.toLowerCase() : null
+
+        if (dayData === null || dayDataLower === 'closed' || dayDataLower === 'fermé') {
+          // Explicitly closed
+          parsedHours[day.key] = { open: '', close: '', closed: true }
+        } else if (typeof dayData === 'string' && dayData.includes('-')) {
+          // Format: "10:00-19:00"
+          const [open, close] = dayData.split('-').map(s => s.trim())
+          parsedHours[day.key] = { open, close, closed: false }
+        } else if (dayData && typeof dayData === 'object' && dayData.open) {
+          // Format: {open: "10:00", close: "19:00"}
+          parsedHours[day.key] = {
+            open: dayData.open || '',
+            close: dayData.close || '',
+            closed: false
           }
-        })
-      }
+        } else {
+          // No data for this day - use defaults
+          parsedHours[day.key] = { open: '08:00', close: '18:00', closed: false }
+        }
+      })
 
       setFormData({
         name: cafe.name || '',
@@ -185,16 +198,13 @@ function CafeForm({ cafe, importedData, onSave, onClose }) {
     e.preventDefault()
     setSaving(true)
 
-    // Format hours for database
+    // Format hours for database (string format: "10:00-18:00")
     const formattedHours = {}
     DAYS.forEach(day => {
       if (formData.hours[day.key].closed) {
         formattedHours[day.key] = null
       } else if (formData.hours[day.key].open && formData.hours[day.key].close) {
-        formattedHours[day.key] = {
-          open: formData.hours[day.key].open,
-          close: formData.hours[day.key].close
-        }
+        formattedHours[day.key] = `${formData.hours[day.key].open}-${formData.hours[day.key].close}`
       }
     })
 
@@ -235,16 +245,23 @@ function CafeForm({ cafe, importedData, onSave, onClose }) {
           <button className="btn-close" onClick={onClose}>&times;</button>
         </div>
 
-        {/* Tabs - only show drinks tab when editing */}
-        {cafe && (
-          <div className="modal-tabs">
-            <button
-              className={`modal-tab ${activeTab === 'info' ? 'active' : ''}`}
-              onClick={() => setActiveTab('info')}
-              type="button"
-            >
-              Informations
-            </button>
+        {/* Tabs */}
+        <div className="modal-tabs">
+          <button
+            className={`modal-tab ${activeTab === 'info' ? 'active' : ''}`}
+            onClick={() => setActiveTab('info')}
+            type="button"
+          >
+            Informations
+          </button>
+          <button
+            className={`modal-tab ${activeTab === 'hours' ? 'active' : ''}`}
+            onClick={() => setActiveTab('hours')}
+            type="button"
+          >
+            Horaires
+          </button>
+          {cafe && (
             <button
               className={`modal-tab ${activeTab === 'drinks' ? 'active' : ''}`}
               onClick={() => setActiveTab('drinks')}
@@ -252,8 +269,8 @@ function CafeForm({ cafe, importedData, onSave, onClose }) {
             >
               Boissons ({cafeDrinks.length})
             </button>
-          </div>
-        )}
+          )}
+        </div>
 
         <form onSubmit={handleSubmit}>
           <div className="modal-body">
@@ -394,38 +411,40 @@ function CafeForm({ cafe, importedData, onSave, onClose }) {
                     placeholder="contact@example.com"
                   />
                 </div>
+              </div>
+            )}
 
-                {/* Hours */}
-                <div className="form-group full-width">
-                  <label>Horaires d'ouverture</label>
-                  <div className="hours-grid">
-                    {DAYS.map(day => (
-                      <div key={day.key} className="hour-row">
-                        <label>{day.label}</label>
+            {/* Hours Tab */}
+            {activeTab === 'hours' && (
+              <div className="hours-tab">
+                <h4>Horaires d'ouverture</h4>
+                <div className="hours-grid">
+                  {DAYS.map(day => (
+                    <div key={day.key} className="hour-row">
+                      <label>{day.label}</label>
+                      <input
+                        type="time"
+                        value={formData.hours[day.key]?.open || ''}
+                        onChange={(e) => handleHoursChange(day.key, 'open', e.target.value)}
+                        disabled={formData.hours[day.key]?.closed}
+                      />
+                      <span>-</span>
+                      <input
+                        type="time"
+                        value={formData.hours[day.key]?.close || ''}
+                        onChange={(e) => handleHoursChange(day.key, 'close', e.target.value)}
+                        disabled={formData.hours[day.key]?.closed}
+                      />
+                      <label className="closed-checkbox">
                         <input
-                          type="time"
-                          value={formData.hours[day.key]?.open || ''}
-                          onChange={(e) => handleHoursChange(day.key, 'open', e.target.value)}
-                          disabled={formData.hours[day.key]?.closed}
+                          type="checkbox"
+                          checked={formData.hours[day.key]?.closed || false}
+                          onChange={(e) => handleClosedChange(day.key, e.target.checked)}
                         />
-                        <span>-</span>
-                        <input
-                          type="time"
-                          value={formData.hours[day.key]?.close || ''}
-                          onChange={(e) => handleHoursChange(day.key, 'close', e.target.value)}
-                          disabled={formData.hours[day.key]?.closed}
-                        />
-                        <label className="closed-checkbox">
-                          <input
-                            type="checkbox"
-                            checked={formData.hours[day.key]?.closed || false}
-                            onChange={(e) => handleClosedChange(day.key, e.target.checked)}
-                          />
-                          Fermé
-                        </label>
-                      </div>
-                    ))}
-                  </div>
+                        Fermé
+                      </label>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}

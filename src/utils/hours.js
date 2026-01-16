@@ -34,6 +34,30 @@ const dayLabels = {
   },
 };
 
+// Parse hours data - handles both "10:00-19:00" string and {open, close} object
+function parseHoursData(dayData) {
+  if (!dayData) return null;
+
+  // Check for closed (case insensitive)
+  if (typeof dayData === 'string') {
+    const lower = dayData.toLowerCase();
+    if (lower === 'closed' || lower === 'fermé') return null;
+  }
+
+  // String format: "10:00-19:00"
+  if (typeof dayData === 'string' && dayData.includes('-')) {
+    const [open, close] = dayData.split('-').map(s => s.trim());
+    return { open, close };
+  }
+
+  // Object format: {open: "10:00", close: "19:00"}
+  if (typeof dayData === 'object' && dayData.open && dayData.close) {
+    return { open: dayData.open, close: dayData.close };
+  }
+
+  return null;
+}
+
 export function getCurrentDay() {
   const dayIndex = new Date().getDay();
   return dayNames.fr[dayIndex];
@@ -43,10 +67,9 @@ export function isOpenNow(hours) {
   if (!hours) return null;
 
   const currentDay = getCurrentDay();
-  const todayHours = hours[currentDay];
+  const todayHours = parseHoursData(hours[currentDay]);
 
-  // Fermé si pas d'horaires ou si null (jour fermé)
-  if (!todayHours || !todayHours.open || !todayHours.close) return false;
+  if (!todayHours) return false;
 
   const now = new Date();
   const currentTime = now.getHours() * 60 + now.getMinutes();
@@ -64,9 +87,9 @@ export function getTodayHours(hours, language = 'fr') {
   if (!hours) return null;
 
   const currentDay = getCurrentDay();
-  const todayHours = hours[currentDay];
+  const todayHours = parseHoursData(hours[currentDay]);
 
-  if (!todayHours || !todayHours.open || !todayHours.close) {
+  if (!todayHours) {
     return language === 'fr' ? 'Fermé' : language === 'es' ? 'Cerrado' : 'Closed';
   }
 
@@ -77,9 +100,9 @@ export function getClosingInfo(hours, language = 'fr') {
   if (!hours) return null;
 
   const currentDay = getCurrentDay();
-  const todayHours = hours[currentDay];
+  const todayHours = parseHoursData(hours[currentDay]);
 
-  if (!todayHours || !todayHours.open || !todayHours.close) return null;
+  if (!todayHours) return null;
 
   const isOpen = isOpenNow(hours);
   if (!isOpen) return null;
@@ -98,10 +121,11 @@ export function getDayLabel(day, language = 'fr') {
 }
 
 export function formatHoursForDay(dayHours, language = 'fr') {
-  if (!dayHours || !dayHours.open || !dayHours.close) {
+  const parsed = parseHoursData(dayHours);
+  if (!parsed) {
     return language === 'fr' ? 'Fermé' : language === 'es' ? 'Cerrado' : 'Closed';
   }
-  return `${dayHours.open} - ${dayHours.close}`;
+  return `${parsed.open} - ${parsed.close}`;
 }
 
 export function getAllDaysOrdered() {
