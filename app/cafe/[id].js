@@ -46,9 +46,9 @@ export default function CafeScreen() {
     })();
   }, []);
 
-  const isOpen = cafe?.hours ? isOpenNow(cafe.hours) : null;
-  const todayHours = cafe?.hours ? getTodayHours(cafe.hours, language) : null;
-  const closingInfo = cafe?.hours ? getClosingInfo(cafe.hours, language) : null;
+  const isOpen = cafe?.opening_hours ? isOpenNow(cafe.opening_hours) : null;
+  const todayHours = cafe?.opening_hours ? getTodayHours(cafe.opening_hours, language) : null;
+  const closingInfo = cafe?.opening_hours ? getClosingInfo(cafe.opening_hours, language) : null;
 
   if (cafeLoading) {
     return (
@@ -228,7 +228,7 @@ export default function CafeScreen() {
             )}
 
             {/* Hours */}
-            {cafe.hours && (
+            {cafe.opening_hours && (
               <View style={[styles.hoursSection, { borderTopColor: theme.border }]}>
                 <TouchableOpacity
                   style={styles.hoursHeader}
@@ -258,7 +258,7 @@ export default function CafeScreen() {
                             {getDayLabel(day, language)}
                           </Text>
                           <Text style={[styles.dayHours, { color: theme.textSecondary }, isToday && { color: theme.primary, fontWeight: '600' }]}>
-                            {formatHoursForDay(cafe.hours[day], language)}
+                            {formatHoursForDay(cafe.opening_hours[day], language)}
                           </Text>
                         </View>
                       );
@@ -268,22 +268,6 @@ export default function CafeScreen() {
               </View>
             )}
 
-            {/* Latte Types */}
-            <View style={[styles.latteSection, { borderTopColor: theme.border }]}>
-              <Text style={[styles.sectionTitle, { color: theme.primary }]}>{t('cafe.availableLattes')}</Text>
-              <View style={styles.latteTypes}>
-                {cafe.latteTypes?.map((type) => (
-                  <View key={type} style={[styles.latteTag, { backgroundColor: theme.primaryLight }]}>
-                    <Text style={[styles.latteTagText, { color: theme.primary }]}>
-                      {type === 'matcha' && `🍵 ${t('lattes.matcha')}`}
-                      {type === 'chai' && `🫖 ${t('lattes.chai')}`}
-                      {type === 'cafe' && `🥛 ${t('lattes.cafe')}`}
-                      {type === 'iced' && `🧊 ${t('lattes.iced')}`}
-                    </Text>
-                  </View>
-                ))}
-              </View>
-            </View>
           </View>
 
           {/* Mini Map */}
@@ -604,33 +588,11 @@ const styles = StyleSheet.create({
     color: '#3D6B4B',
     fontWeight: '600',
   },
-  latteSection: {
-    marginTop: 20,
-    paddingTop: 20,
-    borderTopWidth: 1,
-    borderTopColor: '#E8E8E8',
-  },
   sectionTitle: {
     fontSize: 16,
     fontWeight: '600',
     color: '#3D6B4B',
     marginBottom: 12,
-  },
-  latteTypes: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  latteTag: {
-    backgroundColor: '#E8F5E9',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 20,
-  },
-  latteTagText: {
-    fontSize: 13,
-    color: '#3D6B4B',
-    fontWeight: '500',
   },
   mapSection: {
     paddingHorizontal: 15,

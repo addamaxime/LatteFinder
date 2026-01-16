@@ -45,7 +45,8 @@ export function isOpenNow(hours) {
   const currentDay = getCurrentDay();
   const todayHours = hours[currentDay];
 
-  if (!todayHours) return false;
+  // Fermé si pas d'horaires ou si null (jour fermé)
+  if (!todayHours || !todayHours.open || !todayHours.close) return false;
 
   const now = new Date();
   const currentTime = now.getHours() * 60 + now.getMinutes();
@@ -65,7 +66,7 @@ export function getTodayHours(hours, language = 'fr') {
   const currentDay = getCurrentDay();
   const todayHours = hours[currentDay];
 
-  if (!todayHours) {
+  if (!todayHours || !todayHours.open || !todayHours.close) {
     return language === 'fr' ? 'Fermé' : language === 'es' ? 'Cerrado' : 'Closed';
   }
 
@@ -78,12 +79,10 @@ export function getClosingInfo(hours, language = 'fr') {
   const currentDay = getCurrentDay();
   const todayHours = hours[currentDay];
 
-  if (!todayHours) return null;
+  if (!todayHours || !todayHours.open || !todayHours.close) return null;
 
   const isOpen = isOpenNow(hours);
   if (!isOpen) return null;
-
-  const [closeHour, closeMin] = todayHours.close.split(':').map(Number);
 
   const labels = {
     fr: `Ferme à ${todayHours.close}`,
@@ -99,7 +98,7 @@ export function getDayLabel(day, language = 'fr') {
 }
 
 export function formatHoursForDay(dayHours, language = 'fr') {
-  if (!dayHours) {
+  if (!dayHours || !dayHours.open || !dayHours.close) {
     return language === 'fr' ? 'Fermé' : language === 'es' ? 'Cerrado' : 'Closed';
   }
   return `${dayHours.open} - ${dayHours.close}`;

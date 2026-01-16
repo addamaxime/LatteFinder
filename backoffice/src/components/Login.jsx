@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { supabase } from '../lib/supabase'
+import { supabase, loginWithEmail } from '../lib/supabase'
 
-function Login({ onLogin }) {
+function Login({ onLoginSuccess }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -12,34 +12,39 @@ function Login({ onLogin }) {
     setLoading(true)
     setError('')
 
-    const { data, error: authError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
+    try {
+      // Use custom login that bypasses buggy signInWithPassword
+      const { user } = await loginWithEmail(email, password)
 
-    if (authError) {
-      setError('Email ou mot de passe incorrect')
-      console.error(authError)
+      // Check if user is admin
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('is_admin')
+        .eq('id', user.id)
+        .single()
+
+      if (profileError) {
+        console.error('Profile error:', profileError)
+        await supabase.auth.signOut()
+        setError('Erreur lors de la vérification des droits')
+        setLoading(false)
+        return
+      }
+
+      if (!profile?.is_admin) {
+        await supabase.auth.signOut()
+        setError('Accès non autorisé - compte non admin')
+        setLoading(false)
+        return
+      }
+
+      // Success - notify parent
+      onLoginSuccess(user)
+    } catch (err) {
+      console.error('Login error:', err)
+      setError(err.message || 'Email ou mot de passe incorrect')
       setLoading(false)
-      return
     }
-
-    // Vérifier si l'utilisateur est admin
-    const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('is_admin')
-      .eq('id', data.user.id)
-      .single()
-
-    if (profileError || !profile?.is_admin) {
-      await supabase.auth.signOut()
-      setError('Accès non autorisé')
-      setLoading(false)
-      return
-    }
-
-    onLogin(data.user)
-    setLoading(false)
   }
 
   return (

@@ -64,7 +64,11 @@
     "updateError": "Error al actualizar el perfil",
     "tapToChange": "Toca para cambiar la foto",
     "permissionDenied": "Permiso de galería denegado",
-    "uploadError": "Error al subir la imagen"
+    "uploadError": "Error al subir la imagen",
+    "favoriteDrink": "Bebida favorita",
+    "selectDrink": "Seleccionar una bebida",
+    "noDrinks": "No hay bebidas disponibles",
+    "clearSelection": "Borrar selección"
   },
   "map": {
     "title": "Mapa",

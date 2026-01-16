@@ -107,8 +107,7 @@ function ImportModal({ onImport, onClose }) {
         description: businessInfo.description || '',
         phone: businessInfo.phone || '',
         image: '',
-        latte_types: ['matcha', 'chai', 'cafe', 'iced'],
-        hours: {},
+        opening_hours: {},
         social: {},
         // Include the source URL for reference
         _sourceUrl: url.trim()

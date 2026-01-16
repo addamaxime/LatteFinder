@@ -838,6 +838,190 @@ tr:hover {
   border-color: rgba(255,255,255,0.5);
 }
 
+/* Drinks */
+.drink-icon {
+  font-size: 24px;
+}
+
+.drink-name {
+  font-weight: 500;
+}
+
+.category-badge {
+  background: #e8f5e9;
+  color: #2D5A3D;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.modal-small {
+  max-width: 400px;
+}
+
+.modal-large {
+  max-width: 700px;
+}
+
+/* Modal Tabs */
+.modal-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid #e5e5e5;
+  padding: 0 24px;
+}
+
+.modal-tab {
+  padding: 12px 20px;
+  background: none;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  color: #666;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: all 0.2s;
+}
+
+.modal-tab:hover {
+  color: #4A7C59;
+}
+
+.modal-tab.active {
+  color: #4A7C59;
+  border-bottom-color: #4A7C59;
+}
+
+/* Drinks Tab */
+.drinks-tab {
+  padding: 10px 0;
+}
+
+.drinks-section {
+  margin-bottom: 24px;
+}
+
+.drinks-section h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 12px;
+}
+
+.empty-text {
+  color: #999;
+  font-size: 14px;
+  font-style: italic;
+}
+
+.loading-small {
+  padding: 20px;
+  text-align: center;
+  color: #666;
+}
+
+/* Cafe drinks list */
+.cafe-drinks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cafe-drink-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e5e5e5;
+}
+
+.cafe-drink-icon {
+  font-size: 20px;
+}
+
+.cafe-drink-name {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.cafe-drink-price {
+  width: 80px;
+  padding: 6px 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  text-align: right;
+}
+
+.cafe-drink-price:focus {
+  outline: none;
+  border-color: #4A7C59;
+}
+
+.btn-remove-drink {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: #ffebee;
+  color: #c62828;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.btn-remove-drink:hover {
+  background: #ffcdd2;
+}
+
+/* Available drinks list */
+.available-drinks-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.available-drink-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 14px;
+}
+
+.available-drink-item:hover {
+  border-color: #4A7C59;
+  background: #f0f7f2;
+}
+
+.available-drink-item .drink-icon {
+  font-size: 16px;
+}
+
+.available-drink-item .drink-name {
+  color: #333;
+}
+
+.available-drink-item .drink-add {
+  color: #4A7C59;
+  font-weight: 600;
+  margin-left: 4px;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .form-grid {

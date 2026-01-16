@@ -2,11 +2,11 @@ import { useState, useEffect } from 'react'
 import { supabase, supabaseAdmin } from './lib/supabase'
 import CafeForm from './components/CafeForm'
 import UserForm from './components/UserForm'
+import DrinkForm from './components/DrinkForm'
 import DeleteModal from './components/DeleteModal'
 import ImportModal from './components/ImportModal'
 import Login from './components/Login'
 
-const LATTE_TYPES = ['matcha', 'chai', 'cafe', 'iced']
 
 function App() {
   const [user, setUser] = useState(null)
@@ -29,42 +29,66 @@ function App() {
   const [editingUser, setEditingUser] = useState(null)
   const [deletingUser, setDeletingUser] = useState(null)
 
+  // Drinks state
+  const [drinks, setDrinks] = useState([])
+  const [drinksLoading, setDrinksLoading] = useState(true)
+  const [showDrinkForm, setShowDrinkForm] = useState(false)
+  const [editingDrink, setEditingDrink] = useState(null)
+  const [deletingDrink, setDeletingDrink] = useState(null)
+
   const [toast, setToast] = useState(null)
 
   // Vérifie si l'utilisateur est admin
   const checkAdmin = async (userId) => {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('is_admin')
-      .eq('id', userId)
-      .single()
-    return profile?.is_admin === true
+    try {
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('is_admin')
+        .eq('id', userId)
+        .single()
+      if (error) {
+        console.error('checkAdmin error:', error)
+        return false
+      }
+      return profile?.is_admin === true
+    } catch (err) {
+      console.error('checkAdmin exception:', err)
+      return false
+    }
   }
 
   // Check authentication on mount
   useEffect(() => {
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      if (session?.user) {
-        const isAdmin = await checkAdmin(session.user.id)
-        if (isAdmin) {
-          setUser(session.user)
-        } else {
-          await supabase.auth.signOut()
-        }
-      }
-      setAuthLoading(false)
-    })
+    const initAuth = async () => {
+      try {
+        // Check if there's an existing session in localStorage
+        const { data: { session } } = await supabase.auth.getSession()
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      if (session?.user) {
-        const isAdmin = await checkAdmin(session.user.id)
-        if (isAdmin) {
-          setUser(session.user)
-        } else {
-          await supabase.auth.signOut()
-          setUser(null)
+        if (session?.user) {
+          const isAdmin = await checkAdmin(session.user.id)
+          if (isAdmin) {
+            setUser(session.user)
+          } else {
+            await supabase.auth.signOut()
+          }
         }
-      } else {
+      } catch (err) {
+        console.error('initAuth error:', err)
+      } finally {
+        setAuthLoading(false)
+      }
+    }
+
+    // Set a timeout to prevent infinite loading
+    const timeout = setTimeout(() => {
+      setAuthLoading(false)
+    }, 5000)
+
+    initAuth().finally(() => clearTimeout(timeout))
+
+    // Listen for auth changes (logout, token refresh, etc.)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session) {
         setUser(null)
       }
     })
@@ -76,6 +100,7 @@ function App() {
     if (user) {
       fetchCafes()
       fetchUsers()
+      fetchDrinks()
     }
   }, [user])
 
@@ -88,34 +113,69 @@ function App() {
 
   const fetchCafes = async () => {
     setLoading(true)
-    const { data, error } = await supabase
-      .from('coffees')
-      .select('*')
-      .order('created_at', { ascending: false })
+    try {
+      const { data, error } = await supabase
+        .from('coffees')
+        .select('*')
+        .order('created_at', { ascending: false })
 
-    if (error) {
-      showToast('Erreur lors du chargement des cafés', 'error')
-      console.error(error)
-    } else {
-      setCafes(data || [])
+      if (error) {
+        showToast('Erreur lors du chargement des cafés', 'error')
+        console.error(error)
+      } else {
+        setCafes(data || [])
+      }
+    } catch (err) {
+      console.error('fetchCafes exception:', err)
+      showToast('Erreur réseau', 'error')
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }
 
   const fetchUsers = async () => {
     setUsersLoading(true)
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .order('created_at', { ascending: false })
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .order('created_at', { ascending: false })
 
-    if (error) {
-      showToast('Erreur lors du chargement des utilisateurs', 'error')
-      console.error(error)
-    } else {
-      setUsers(data || [])
+      if (error) {
+        showToast('Erreur lors du chargement des utilisateurs', 'error')
+        console.error(error)
+      } else {
+        setUsers(data || [])
+      }
+    } catch (err) {
+      console.error('fetchUsers exception:', err)
+      showToast('Erreur réseau', 'error')
+    } finally {
+      setUsersLoading(false)
     }
-    setUsersLoading(false)
+  }
+
+  const fetchDrinks = async () => {
+    setDrinksLoading(true)
+    try {
+      const { data, error } = await supabase
+        .from('drinks')
+        .select('*')
+        .order('category', { ascending: true })
+        .order('name', { ascending: true })
+
+      if (error) {
+        showToast('Erreur lors du chargement des boissons', 'error')
+        console.error(error)
+      } else {
+        setDrinks(data || [])
+      }
+    } catch (err) {
+      console.error('fetchDrinks exception:', err)
+      showToast('Erreur réseau', 'error')
+    } finally {
+      setDrinksLoading(false)
+    }
   }
 
   const showToast = (message, type = 'success') => {
@@ -162,7 +222,9 @@ function App() {
     setDeletingCafe(null)
   }
 
-  const handleSave = async (cafeData) => {
+  const handleSave = async (cafeData, cafeDrinks = []) => {
+    let cafeId = editingCafe?.id
+
     if (editingCafe) {
       const { error } = await supabase
         .from('coffees')
@@ -174,35 +236,54 @@ function App() {
         console.error(error)
         return false
       }
-      showToast('Café modifié avec succès')
     } else {
       // Insert
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('coffees')
         .insert([cafeData])
+        .select('id')
+        .single()
 
       if (error) {
         showToast('Erreur lors de l\'ajout', 'error')
         console.error(error)
         return false
       }
-      showToast('Café ajouté avec succès')
+      cafeId = data.id
     }
 
+    // Save coffee_drinks if editing
+    if (editingCafe && cafeId) {
+      // Delete existing coffee_drinks
+      await supabase
+        .from('coffee_drinks')
+        .delete()
+        .eq('coffee_id', cafeId)
+
+      // Insert new coffee_drinks
+      if (cafeDrinks.length > 0) {
+        const drinksToInsert = cafeDrinks.map(cd => ({
+          coffee_id: cafeId,
+          drink_id: cd.drink_id,
+          price: cd.price ? parseFloat(cd.price) : null,
+          notes: cd.notes || null
+        }))
+
+        const { error: drinksError } = await supabase
+          .from('coffee_drinks')
+          .insert(drinksToInsert)
+
+        if (drinksError) {
+          console.error('Erreur coffee_drinks:', drinksError)
+          showToast('Café sauvegardé mais erreur sur les boissons', 'error')
+        }
+      }
+    }
+
+    showToast(editingCafe ? 'Café modifié avec succès' : 'Café ajouté avec succès')
     setShowForm(false)
     fetchCafes()
     return true
-  }
-
-  const formatLatteTypes = (types) => {
-    if (!types || types.length === 0) return '-'
-    const labels = {
-      matcha: 'Matcha',
-      chai: 'Chai',
-      cafe: 'Café',
-      iced: 'Iced'
-    }
-    return types.map(t => labels[t] || t)
   }
 
   const handleLogout = async () => {
@@ -359,6 +440,69 @@ function App() {
     return true
   }
 
+  // Drink management functions
+  const handleAddDrink = () => {
+    setEditingDrink(null)
+    setShowDrinkForm(true)
+  }
+
+  const handleEditDrink = (drink) => {
+    setEditingDrink(drink)
+    setShowDrinkForm(true)
+  }
+
+  const handleDeleteDrink = (drink) => {
+    setDeletingDrink(drink)
+  }
+
+  const confirmDeleteDrink = async () => {
+    const { error } = await supabase
+      .from('drinks')
+      .delete()
+      .eq('id', deletingDrink.id)
+
+    if (error) {
+      showToast('Erreur lors de la suppression', 'error')
+      console.error(error)
+    } else {
+      showToast('Boisson supprimée avec succès')
+      fetchDrinks()
+    }
+    setDeletingDrink(null)
+  }
+
+  const handleSaveDrink = async (drinkData) => {
+    if (editingDrink) {
+      const { error } = await supabase
+        .from('drinks')
+        .update(drinkData)
+        .eq('id', editingDrink.id)
+
+      if (error) {
+        showToast('Erreur lors de la modification', 'error')
+        console.error(error)
+        return false
+      }
+      showToast('Boisson modifiée avec succès')
+    } else {
+      const { error } = await supabase
+        .from('drinks')
+        .insert([drinkData])
+
+      if (error) {
+        showToast('Erreur lors de l\'ajout', 'error')
+        console.error(error)
+        return false
+      }
+      showToast('Boisson ajoutée avec succès')
+    }
+
+    setShowDrinkForm(false)
+    setEditingDrink(null)
+    fetchDrinks()
+    return true
+  }
+
   // Show loading while checking auth
   if (authLoading) {
     return (
@@ -373,7 +517,7 @@ function App() {
 
   // Show login if not authenticated
   if (!user) {
-    return <Login onLogin={setUser} />
+    return <Login onLoginSuccess={setUser} />
   }
 
   return (
@@ -388,6 +532,12 @@ function App() {
               onClick={() => setActiveTab('cafes')}
             >
               Cafés <span className="tab-count">{cafes.length}</span>
+            </button>
+            <button
+              className={`tab ${activeTab === 'drinks' ? 'active' : ''}`}
+              onClick={() => setActiveTab('drinks')}
+            >
+              Boissons <span className="tab-count">{drinks.length}</span>
             </button>
             <button
               className={`tab ${activeTab === 'users' ? 'active' : ''}`}
@@ -407,6 +557,11 @@ function App() {
                 <span>+</span> Ajouter un café
               </button>
             </>
+          )}
+          {activeTab === 'drinks' && (
+            <button className="btn-add" onClick={handleAddDrink}>
+              <span>+</span> Ajouter une boisson
+            </button>
           )}
           {activeTab === 'users' && (
             <button className="btn-add" onClick={handleAddUser}>
@@ -439,7 +594,6 @@ function App() {
               <tr>
                 <th>Image</th>
                 <th>Nom</th>
-                <th>Lattes</th>
                 <th>Téléphone</th>
                 <th>Coordonnées</th>
                 <th>Actions</th>
@@ -470,13 +624,6 @@ function App() {
                       <div className="cafe-name">{cafe.name}</div>
                       <div className="cafe-address">{cafe.address}</div>
                     </td>
-                    <td>
-                      <div className="latte-tags">
-                        {formatLatteTypes(cafe.latte_types).map((type, i) => (
-                          <span key={i} className="latte-tag">{type}</span>
-                        ))}
-                      </div>
-                    </td>
                     <td>{cafe.phone || '-'}</td>
                     <td>
                       <small>{cafe.latitude?.toFixed(4)}, {cafe.longitude?.toFixed(4)}</small>
@@ -492,6 +639,59 @@ function App() {
                       </div>
                     </td>
                   </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ))}
+
+      {activeTab === 'drinks' && (drinksLoading ? (
+        <div className="loading">
+          <div className="loading-spinner"></div>
+          <p>Chargement des boissons...</p>
+        </div>
+      ) : drinks.length === 0 ? (
+        <div className="empty-state">
+          <div className="empty-state-icon">🍵</div>
+          <p>Aucune boisson pour le moment</p>
+          <button className="btn-add" onClick={handleAddDrink} style={{ marginTop: 16 }}>
+            Ajouter votre première boisson
+          </button>
+        </div>
+      ) : (
+        <div className="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Icône</th>
+                <th>Nom</th>
+                <th>Catégorie</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {drinks.map((drink) => (
+                <tr key={drink.id}>
+                  <td>
+                    <span className="drink-icon">{drink.icon || '☕'}</span>
+                  </td>
+                  <td>
+                    <div className="drink-name">{drink.name}</div>
+                  </td>
+                  <td>
+                    <span className="category-badge">{drink.category || '-'}</span>
+                  </td>
+                  <td>
+                    <div className="actions">
+                      <button className="btn-edit" onClick={() => handleEditDrink(drink)}>
+                        Modifier
+                      </button>
+                      <button className="btn-delete" onClick={() => handleDeleteDrink(drink)}>
+                        Supprimer
+                      </button>
+                    </div>
+                  </td>
+                </tr>
               ))}
             </tbody>
           </table>
@@ -605,6 +805,40 @@ function App() {
             setEditingUser(null)
           }}
         />
+      )}
+
+      {showDrinkForm && (
+        <DrinkForm
+          drink={editingDrink}
+          onSave={handleSaveDrink}
+          onClose={() => {
+            setShowDrinkForm(false)
+            setEditingDrink(null)
+          }}
+        />
+      )}
+
+      {deletingDrink && (
+        <div className="modal-overlay" onClick={() => setDeletingDrink(null)}>
+          <div className="modal delete-modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-body">
+              <div className="delete-icon">⚠️</div>
+              <h3>Supprimer la boisson ?</h3>
+              <p>
+                Voulez-vous vraiment supprimer <strong>{deletingDrink.name}</strong> ?
+                Cette action est irréversible.
+              </p>
+              <div className="delete-actions">
+                <button className="btn-cancel" onClick={() => setDeletingDrink(null)}>
+                  Annuler
+                </button>
+                <button className="btn-confirm-delete" onClick={confirmDeleteDrink}>
+                  Supprimer
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
 
       {deletingUser && (

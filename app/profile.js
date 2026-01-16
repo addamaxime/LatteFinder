@@ -9,6 +9,8 @@ import {
   Alert,
   ActivityIndicator,
   Image,
+  Modal,
+  FlatList,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -19,6 +21,7 @@ import { menuState } from '../src/utils/menuState';
 import { useLanguage } from '../src/context/LanguageContext';
 import { useTheme } from '../src/context/ThemeContext';
 import { useAuth } from '../src/context/AuthContext';
+import { supabase } from '../src/lib/supabase';
 
 export default function ProfileScreen() {
   const { t } = useLanguage();
@@ -30,6 +33,9 @@ export default function ProfileScreen() {
   const [username, setUsername] = useState('');
   const [saving, setSaving] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [drinks, setDrinks] = useState([]);
+  const [favoriteDrinkId, setFavoriteDrinkId] = useState(null);
+  const [showDrinkPicker, setShowDrinkPicker] = useState(false);
 
   const handleSignOut = () => {
     Alert.alert(
@@ -54,8 +60,29 @@ export default function ProfileScreen() {
       setFirstName(profile.first_name || '');
       setLastName(profile.last_name || '');
       setUsername(profile.username || '');
+      setFavoriteDrinkId(profile.favorite_drink_id || null);
     }
   }, [profile]);
+
+  useEffect(() => {
+    fetchDrinks();
+  }, []);
+
+  const fetchDrinks = async () => {
+    const { data, error } = await supabase
+      .from('drinks')
+      .select('*')
+      .order('category')
+      .order('name');
+
+    if (!error && data) {
+      setDrinks(data);
+    }
+  };
+
+  const getSelectedDrink = () => {
+    return drinks.find(d => d.id === favoriteDrinkId);
+  };
 
   const handlePickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -102,6 +129,7 @@ export default function ProfileScreen() {
       first_name: firstName.trim(),
       last_name: lastName.trim(),
       username: username.trim(),
+      favorite_drink_id: favoriteDrinkId,
     });
     setSaving(false);
 
@@ -220,6 +248,24 @@ export default function ProfileScreen() {
             </View>
             <Text style={styles.inputHint}>{t('profile.emailHint')}</Text>
           </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.inputLabel}>{t('profile.favoriteDrink')}</Text>
+            <TouchableOpacity
+              style={styles.drinkSelector}
+              onPress={() => setShowDrinkPicker(true)}
+            >
+              {getSelectedDrink() ? (
+                <View style={styles.selectedDrink}>
+                  <Text style={styles.drinkIcon}>{getSelectedDrink().icon || '☕'}</Text>
+                  <Text style={styles.drinkName}>{getSelectedDrink().name}</Text>
+                </View>
+              ) : (
+                <Text style={styles.drinkPlaceholder}>{t('profile.selectDrink')}</Text>
+              )}
+              <Text style={styles.drinkArrow}>›</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         <TouchableOpacity
@@ -245,6 +291,66 @@ export default function ProfileScreen() {
           <Text style={styles.signOutText}>{t('auth.signOut')}</Text>
         </TouchableOpacity>
       </ScrollView>
+
+      <Modal
+        visible={showDrinkPicker}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setShowDrinkPicker(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>{t('profile.selectDrink')}</Text>
+              <TouchableOpacity onPress={() => setShowDrinkPicker(false)}>
+                <Text style={styles.modalClose}>✕</Text>
+              </TouchableOpacity>
+            </View>
+            <FlatList
+              data={drinks}
+              keyExtractor={(item) => item.id}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={[
+                    styles.drinkOption,
+                    favoriteDrinkId === item.id && styles.drinkOptionSelected,
+                  ]}
+                  onPress={() => {
+                    setFavoriteDrinkId(item.id);
+                    setShowDrinkPicker(false);
+                  }}
+                >
+                  <Text style={styles.drinkOptionIcon}>{item.icon || '☕'}</Text>
+                  <View style={styles.drinkOptionInfo}>
+                    <Text style={[
+                      styles.drinkOptionName,
+                      favoriteDrinkId === item.id && styles.drinkOptionNameSelected,
+                    ]}>{item.name}</Text>
+                    {item.category && (
+                      <Text style={styles.drinkOptionCategory}>{item.category}</Text>
+                    )}
+                  </View>
+                  {favoriteDrinkId === item.id && (
+                    <Text style={styles.drinkOptionCheck}>✓</Text>
+                  )}
+                </TouchableOpacity>
+              )}
+              ListEmptyComponent={
+                <Text style={styles.emptyDrinks}>{t('profile.noDrinks')}</Text>
+              }
+            />
+            <TouchableOpacity
+              style={styles.clearButton}
+              onPress={() => {
+                setFavoriteDrinkId(null);
+                setShowDrinkPicker(false);
+              }}
+            >
+              <Text style={styles.clearButtonText}>{t('profile.clearSelection')}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -453,5 +559,114 @@ const createStyles = (theme) => StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: '#E53935',
+  },
+  drinkSelector: {
+    backgroundColor: theme.inputBackground,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  selectedDrink: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  drinkIcon: {
+    fontSize: 20,
+  },
+  drinkName: {
+    fontSize: 16,
+    color: theme.text,
+  },
+  drinkPlaceholder: {
+    fontSize: 16,
+    color: theme.textMuted,
+  },
+  drinkArrow: {
+    fontSize: 20,
+    color: theme.textMuted,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    backgroundColor: theme.card,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    maxHeight: '70%',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.border,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: theme.text,
+  },
+  modalClose: {
+    fontSize: 20,
+    color: theme.textMuted,
+    padding: 5,
+  },
+  drinkOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.border,
+  },
+  drinkOptionSelected: {
+    backgroundColor: theme.primaryLight,
+  },
+  drinkOptionIcon: {
+    fontSize: 24,
+    marginRight: 12,
+  },
+  drinkOptionInfo: {
+    flex: 1,
+  },
+  drinkOptionName: {
+    fontSize: 16,
+    color: theme.text,
+  },
+  drinkOptionNameSelected: {
+    color: theme.primary,
+    fontWeight: '600',
+  },
+  drinkOptionCategory: {
+    fontSize: 12,
+    color: theme.textMuted,
+    marginTop: 2,
+    textTransform: 'capitalize',
+  },
+  drinkOptionCheck: {
+    fontSize: 18,
+    color: theme.primary,
+    fontWeight: '700',
+  },
+  emptyDrinks: {
+    textAlign: 'center',
+    padding: 40,
+    color: theme.textMuted,
+  },
+  clearButton: {
+    padding: 16,
+    alignItems: 'center',
+    borderTopWidth: 1,
+    borderTopColor: theme.border,
+  },
+  clearButtonText: {
+    fontSize: 16,
+    color: theme.textMuted,
   },
 });

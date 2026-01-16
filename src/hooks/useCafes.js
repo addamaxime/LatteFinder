@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 
-export function useCafes(latteType = null) {
+export function useCafes() {
   const [cafes, setCafes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -11,23 +11,17 @@ export function useCafes(latteType = null) {
       setLoading(true);
       setError(null);
 
-      let query = supabase
+      const { data, error: fetchError } = await supabase
         .from('coffees')
         .select('*')
-        .eq('is_active', true);
-
-      if (latteType) {
-        query = query.contains('latte_types', [latteType]);
-      }
-
-      const { data, error: fetchError } = await query.order('name');
+        .eq('is_active', true)
+        .order('name');
 
       if (fetchError) throw fetchError;
 
       // Transform data to match app's expected format
       const transformedCafes = data.map(cafe => ({
         ...cafe,
-        latteTypes: cafe.latte_types,
         rating: cafe.average_rating || 4.5, // Default rating if no reviews
       }));
 
@@ -38,7 +32,7 @@ export function useCafes(latteType = null) {
     } finally {
       setLoading(false);
     }
-  }, [latteType]);
+  }, []);
 
   useEffect(() => {
     fetchCafes();
@@ -71,7 +65,6 @@ export function useCafe(id) {
         // Transform data
         const transformedCafe = {
           ...data,
-          latteTypes: data.latte_types,
           rating: data.average_rating || 4.5,
         };
 
@@ -116,7 +109,6 @@ export function useNearestCafes(latitude, longitude, radius = 10) {
         const cafesWithDistance = data
           .map(cafe => ({
             ...cafe,
-            latteTypes: cafe.latte_types,
             rating: cafe.average_rating || 4.5,
             distance: calculateDistance(
               latitude,

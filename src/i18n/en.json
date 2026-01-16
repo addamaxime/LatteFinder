@@ -64,7 +64,11 @@
     "updateError": "Error updating profile",
     "tapToChange": "Tap to change photo",
     "permissionDenied": "Gallery permission denied",
-    "uploadError": "Error uploading image"
+    "uploadError": "Error uploading image",
+    "favoriteDrink": "Favorite drink",
+    "selectDrink": "Select a drink",
+    "noDrinks": "No drinks available",
+    "clearSelection": "Clear selection"
   },
   "map": {
     "title": "Map",

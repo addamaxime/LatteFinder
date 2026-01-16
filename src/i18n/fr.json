@@ -64,7 +64,11 @@
     "updateError": "Erreur lors de la mise à jour du profil",
     "tapToChange": "Appuyez pour changer la photo",
     "permissionDenied": "Permission d'accès à la galerie refusée",
-    "uploadError": "Erreur lors de l'upload de l'image"
+    "uploadError": "Erreur lors de l'upload de l'image",
+    "favoriteDrink": "Boisson favorite",
+    "selectDrink": "Sélectionner une boisson",
+    "noDrinks": "Aucune boisson disponible",
+    "clearSelection": "Effacer la sélection"
   },
   "map": {
     "title": "Carte",

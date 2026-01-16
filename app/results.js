@@ -145,7 +145,7 @@ export default function ResultsScreen() {
             showsVerticalScrollIndicator={false}
           >
             {cafes.map((cafe) => {
-              const isOpen = cafe.hours ? isOpenNow(cafe.hours) : null;
+              const isOpen = cafe.opening_hours ? isOpenNow(cafe.opening_hours) : null;
               return (
                 <TouchableOpacity
                   key={cafe.id}
